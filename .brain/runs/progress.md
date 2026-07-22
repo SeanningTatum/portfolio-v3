@@ -21,6 +21,20 @@
 
 ---
 
+## 2026-07-22 — feat-011 console-v2 SHIPPED
+- branch: `main` (uncommitted batch continues — commits on user word)
+- in-progress feature: none (11/11 shipped)
+- run note: `.brain/runs/2026-07-22-console-v2.md` (closed)
+- shipped: sleek pass (front-lit chrome env, reflector floor + fog, hover-only lasers, motes, glass streak, richer script + late-night) + CRT OS (BIOS boot, interactive terminal w/ sudo-hire-sean, matrix/pong/starfield cycle, DVD saver, LED power ritual, clack/zap SFX, devtools hire() egg). 365 tests, e2e, build green; 17-screenshot browser walk PASS
+- next: user real-GPU + audio spot check; commit batch on user word
+
+## 2026-07-22 — feat-011 console-v2 started
+- branch: `main` (uncommitted batch continues)
+- in-progress feature: feat-011
+- run note: `.brain/runs/2026-07-22-console-v2.md`
+- scope: home console sleek pass (chrome env, hover lasers, reflective floor, motes, glass streak, richer script) + fun layer (power-on, screen modes, mini terminal, screensaver, LED off, late-night, sound, console art). NO konami (user-excluded).
+- next: rework Lightformer env in hero-scene.client.tsx so chrome reads as chrome
+
 ## 2026-07-22 — feat-010 skills-marketplace SHIPPED
 - branch: `main` (committing batch next — user-directed)
 - in-progress feature: none (all 10 features shipped)

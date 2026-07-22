@@ -10,12 +10,30 @@ export const CRT_SCRIPT: readonly string[] = [
   "> Read(.brain/recipes/add-feature.md)",
   "> Edit(app/routes/projects.tsx)",
   "> Bash(bun run test)",
-  "  273 passed (273)",
-  "> Agent(feature-verifier) ... PASS",
-  "$ git push",
-  "  deployed to cloudflare workers",
-  "$ █",
+  "  ▓▓▓▓▓▓▓▓▓▓ 295 passed (295)",
+  "> Agent(feature-verifier) … PASS ✓",
+  "$ git push && bun run deploy",
+  "  build ▓▓▓▓▓▓▓▓▓░ ok (1.2s)",
+  "  deployed → cloudflare workers ✓",
 ];
+
+/** What the machine is really doing after midnight. */
+export const LATE_NIGHT_SCRIPT: readonly string[] = [
+  "$ date",
+  "  03:12 — late night session",
+  "$ claude 'one more fix'",
+  "> Read(app/lib/crt-script.ts)",
+  "> Edit(app/components/hero.tsx)",
+  "> Bash(bun run test)",
+  "  ▓▓▓▓▓▓▓▓▓▓ 295 passed (295)",
+  "  ship it. sleep after this one.",
+  "$ git commit -m 'trust me'",
+];
+
+/** Pick the attract script for a local hour (0–23): night owls get truth. */
+export function scriptForHour(hour: number): readonly string[] {
+  return hour >= 0 && hour < 5 ? LATE_NIGHT_SCRIPT : CRT_SCRIPT;
+}
 
 export interface TypeState {
   /** Index of the line currently being typed. */

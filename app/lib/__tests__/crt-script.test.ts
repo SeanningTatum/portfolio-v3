@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
 import {
+  CRT_SCRIPT,
+  LATE_NIGHT_SCRIPT,
   advanceType,
   isComplete,
+  scriptForHour,
   visibleLines,
   INITIAL_TYPE_STATE,
 } from "../crt-script";
@@ -66,5 +69,19 @@ describe("visibleLines", () => {
   it("returns everything when complete and maxRows is large", () => {
     const done = advanceType(INITIAL_TYPE_STATE, 100, SCRIPT);
     expect(visibleLines(done, 10, SCRIPT)).toEqual(["abc", "de", "f"]);
+  });
+});
+
+describe("scriptForHour", () => {
+  it("serves the late-night script in the small hours", () => {
+    expect(scriptForHour(0)).toBe(LATE_NIGHT_SCRIPT);
+    expect(scriptForHour(3)).toBe(LATE_NIGHT_SCRIPT);
+    expect(scriptForHour(4)).toBe(LATE_NIGHT_SCRIPT);
+  });
+
+  it("serves the day script otherwise", () => {
+    expect(scriptForHour(5)).toBe(CRT_SCRIPT);
+    expect(scriptForHour(12)).toBe(CRT_SCRIPT);
+    expect(scriptForHour(23)).toBe(CRT_SCRIPT);
   });
 });

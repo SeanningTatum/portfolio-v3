@@ -144,6 +144,21 @@
       "owners": [
         "sean"
       ]
+    },
+    {
+      "id": "feat-011",
+      "name": "Console v2",
+      "slug": "console-v2",
+      "doc": ".brain/features/console-v2/console-v2.md",
+      "description": "Home console upgrade — sleek pass (chrome env fix, hover-only lasers, reflective floor, dust motes, glass streak, richer CRT script) + fun layer (power-on sequence, click-to-cycle screen modes: matrix rain/pong/starfield, keystroke mini-terminal with commands, idle DVD screensaver, LED power-off, late-night script, sound design, devtools console art). No konami code (user-excluded).",
+      "dependencies": [
+        "feat-007"
+      ],
+      "status": "shipped",
+      "evidence": "shipped 2026-07-22; verify-done PASS (typecheck, 365 tests, e2e 2/2, build); main-thread browser walk PASS .brain/features/console-v2/verifications/2026-07-22.md (boot/terminal/sudo/matrix/pong/starfield/cycle/LED-off-on/saver/hover, 17 screenshots, 0 js errors); +70 unit tests, no new deps (bloom rejected vs WebGL stability rules); run note .brain/runs/2026-07-22-console-v2.md (closed)",
+      "owners": [
+        "sean"
+      ]
     }
   ]
 }

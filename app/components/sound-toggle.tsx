@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { IconVolume, IconVolumeOff } from "@tabler/icons-react";
+import { setSoundEnabled } from "@/lib/console-sound";
 import { cn } from "@/lib/utils";
 
 /**
@@ -17,6 +18,7 @@ export function SoundToggle({ className }: { className?: string }) {
     return () => {
       audioRef.current?.pause();
       audioRef.current = null;
+      setSoundEnabled(false);
     };
   }, []);
 
@@ -29,13 +31,22 @@ export function SoundToggle({ className }: { className?: string }) {
     }
     if (playing) {
       audioRef.current.pause();
+      setSoundEnabled(false);
       setPlaying(false);
     } else {
       // play() returns a promise; if the browser refuses, stay OFF.
+      // The synth SFX (key clacks, laser zap) ride the same switch — this
+      // click is the user gesture that unlocks the AudioContext.
       audioRef.current
         .play()
-        .then(() => setPlaying(true))
-        .catch(() => setPlaying(false));
+        .then(() => {
+          setSoundEnabled(true);
+          setPlaying(true);
+        })
+        .catch(() => {
+          setSoundEnabled(false);
+          setPlaying(false);
+        });
     }
   };
 

@@ -92,6 +92,16 @@ Refs: Dennis Snellenberg (oversized type as page event), Yinger/Phantom (dark st
 - **The object is a series.** `OBJECT_01 — CHROME` (torus knot, retired but kept in git history) → `OBJECT_02 — CRT`: chrome retro terminal (RoundedBox shell, neck + base) whose screen live-types an agentic coding session in phosphor green — CanvasTexture driven by the pure typing machine in `app/lib/crt-script.ts` (script lines, `advanceType`/`visibleLines`, unit-tested). Scanlines + blinking block cursor + glow. Screen must face the viewer: gentle sin sway, never a full spin. Energy (portal hover) speeds typing 13→46 cps + flares lasers.
 - **Ambient sound.** `public/audio/ambient.mp3` (23s calm ambient, HeyGen catalog via media-use, faded ends, 96kbps ~277KB, ledger `.media/manifest.jsonl`). `SoundToggle` (`app/components/sound-toggle.tsx`) in the mono label stack under GMT+8: gesture-gated (autoplay policy), starts OFF every visit, volume 0.3, loops, stops on unmount. Label text = design token.
 
+## Amendment — 2026-07-22 console v2 (sleek pass + interactive OS)
+
+- **Chrome needs front light.** The Lightformer env must include camera-side formers (frontal + top-front panels in `hero-scene.client.tsx`) — metalness-1 surfaces mirror the empty room and render black without them. Contrast (hard bright panels, real dark gaps, one warm strip) is what makes chrome read as chrome.
+- **Reflective floor + fog.** `MeshReflectorMaterial` plane (#101012, res 512, heavy blur) under the object, `<fog #141416 7→17>` so the plane's far edge melts into the DOM stage. Object sits ON the floor (group y −0.25) — no more floating.
+- **Lasers are an event, not wallpaper.** Opacity 0 at rest; they sweep in only with portal-hover energy.
+- **Atmosphere:** 120-point dust-mote cloud; glass streak painted on the screen canvas (drawn even when the tube is off).
+- **The tube is a tiny OS.** Modes: boot (BIOS memcheck raster ritual) / terminal (attract script; typing anywhere opens a real prompt — `help`, `sudo hire sean`, `cat secrets.txt`…) / matrix / pong / starfield (click tube to cycle) / DVD screensaver (60s idle) / off (power LED click, collapse-to-line animation). Pure state machines in `app/lib/`, all unit-tested; drawing stays in the client file. Konami code deliberately absent (user-excluded).
+- **Sound:** WebAudio synth (key clacks, laser zap) rides the existing SoundToggle; ambient.mp3 unchanged; no hum (ambient covers it). Devtools ASCII egg + `window.hire()` on `/`.
+- Bloom/postprocessing REJECTED: new dep + EffectComposer risk vs. the WebGL stability rules below; canvas shadowBlur glow is sufficient.
+
 ## Amendment — 2026-07-21 boot loader + WebGL stability rules
 
 - **NEVER use drei `<Environment preset>` (HDR) in this project.** The HDR fetch + PMREM generation blew up the WebGL context (~2.5s after load → scene vanished — "shows for a split second" bug) and pulled from a CDN at runtime. Use the procedural Lightformer environment in `hero-scene.client.tsx` (`<Environment resolution={128} frames={1}>` + 4 Lightformer softboxes) — local, cheap, chrome stays reflective.

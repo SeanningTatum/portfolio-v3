@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { BootLoader } from "@/components/boot-loader";
 import { HeroScene } from "@/components/hero-scene";
 import { SoundToggle } from "@/components/sound-toggle";
+import { printConsoleEgg } from "@/lib/console-egg";
 import { cn } from "@/lib/utils";
 import type { Route } from "./+types/home";
 
@@ -52,6 +53,11 @@ export default function Home() {
     const timer = setTimeout(markBooted, BOOT_TIMEOUT_MS);
     return () => clearTimeout(timer);
   }, [markBooted]);
+
+  // For the visitor who opens devtools: ASCII CRT + a global hire().
+  useEffect(() => {
+    printConsoleEgg(console, window as unknown as Record<string, unknown>);
+  }, []);
 
   return (
     <div
