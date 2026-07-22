@@ -5,6 +5,7 @@ import type home from "../locales/en/home.json";
 import type validation from "../locales/en/validation.json";
 import type upload from "../locales/en/upload.json";
 import type projects from "../locales/en/projects.json";
+import type marketplace from "../locales/en/marketplace.json";
 
 declare module "i18next" {
   interface CustomTypeOptions {
@@ -17,6 +18,7 @@ declare module "i18next" {
       validation: typeof validation;
       upload: typeof upload;
       projects: typeof projects;
+      marketplace: typeof marketplace;
     };
   }
 }

@@ -21,6 +21,37 @@
 
 ---
 
+## 2026-07-22 — feat-010 skills-marketplace SHIPPED
+- branch: `main` (committing batch next — user-directed)
+- in-progress feature: none (all 10 features shipped)
+- run note: `.brain/runs/2026-07-22-skills-marketplace.md` (closed)
+- shipped: /marketplace UI + skill data layer; enforcer minors fixed; feature-verifier PASS; verify-done PASS (295 tests, e2e, build)
+- next: commit full uncommitted batch (emoji takeover + marketplace + brain)
+
+## 2026-07-22 — feat-010 skills-marketplace started
+- branch: `main` (uncommitted batch continues)
+- in-progress feature: feat-010
+- run note: `.brain/runs/2026-07-22-skills-marketplace.md`
+- next: delegate data layer (skill table + repo + tRPC + seed) to recipe-runner; UI on main thread
+
+## 2026-07-22 — portal emoji sprites + sound/timezone layout notes
+- branch: `main` (uncommitted batch continues)
+- changes: portal hover now projects a phosphor emoji sprite on the CRT (Work 🛠️ / Marketplace 🤖) — grayscale→green-multiply→nearest-neighbor upscale pipeline (`phosphorSprite`, cached per emoji), breathing scale, green glow, fades with eased energy (lastEmoji ref so fade-OUT keeps identity), scanlines/vignette roll over it; hover state refactored `energy` → `hovered: work|marketplace|null`; SoundToggle (with volume icons) moved top-right; GMT-7 label removed
+- verified: screenshot — robot sprite reads as authentic tube graphic, typing continues above; 282 tests/typecheck/build green
+- next: commit batch on user word; feat-010 marketplace
+
+## 2026-07-21 — premium stage pass (lights, layout, sound icon)
+- branch: `main` (uncommitted with retro batch)
+- changes: DOM spotlight pool (radial #232328→#141416 at 50%/36%) + SVG-noise grain (opacity .05) behind scene — GPU-independent atmosphere; in-scene ContactShadows (frames=1, res 256 — context-safe) + neon pointLight phosphor spill onto hardware; identity block (role + GMT-7 + sound) moved top-LEFT; SoundToggle got IconVolume/IconVolumeOff; v3.0 moved bottom-right pairing with availability line; PORTFOLIO — 2026 stays mid-right
+- verified: screenshot reviewed — spotlight + green spill + shadow read premium even in software GL; 282 tests/typecheck/build green
+- next: commit both batches on user word; feat-010 marketplace
+
+## 2026-07-21 — retro CRT pass + identity/layout notes (post-commit 58e82cc+1)
+- branch: `main` (checkpoint commit made before these changes, per user)
+- changes: CRT retro upgrade (rear tube hump, front vent slits, neon power LED, chunky wedge base, tube-glow radial bg, phosphor flicker, rolling scanlines, curved-glass vignette); wordmark → "Sean Stuart Urgel"; role description moved top-right above GMT-7 (was GMT+8 — user is in Calgary now) + SOUND stack; location → Calgary, Canada (en+zh); scene canvas now stops above portal bar (bottom-64/sm:bottom-40) + portal bar opaque ink; portal hover = full surface inversion (bar flips pure-white, type carbon)
+- verified: screenshots reviewed (idle + hover) — CRT reads properly retro, portals no longer drowned, inversion hover strong; 282 tests/typecheck/build green
+- next: commit this batch after user review; feat-010 marketplace
+
 ## 2026-07-21 — render-vanish bug fixed + boot loader shipped
 - branch: `main` (no commits yet)
 - root cause (user-reported "shows split second then gone"): drei `Environment preset="studio"` HDR + PMREM **lost the WebGL context** ~2.5s after load — proven by isContextLost() probe (lost:true), bisect (env off → lost:false). Replaced with procedural Lightformer env (resolution 128, frames 1, 4 softboxes) — no CDN, cheap, chrome still reflective. Context alive at t+18s post-fix.

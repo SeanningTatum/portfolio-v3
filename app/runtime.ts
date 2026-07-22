@@ -9,6 +9,7 @@ import { UserRepository } from "@/repositories/user";
 import { AnalyticsRepository } from "@/repositories/analytics";
 import { BucketRepository } from "@/repositories/bucket";
 import { ProjectRepository } from "@/repositories/project";
+import { SkillRepository } from "@/repositories/skill";
 
 export type AppServices =
   | Database
@@ -18,7 +19,8 @@ export type AppServices =
   | UserRepository
   | AnalyticsRepository
   | BucketRepository
-  | ProjectRepository;
+  | ProjectRepository
+  | SkillRepository;
 
 // `baseURL` is the request's own origin — threaded through to Better Auth
 // via `AuthApiLive(baseURL)` so the single construction path (Effect.try →
@@ -35,7 +37,8 @@ export const makeAppRuntime = (env: Env, baseURL?: string) => {
     UserRepository.Default,
     AnalyticsRepository.Default,
     BucketRepository.Default,
-    ProjectRepository.Default
+    ProjectRepository.Default,
+    SkillRepository.Default
   );
   const layer = reposLayer
     .pipe(Layer.provideMerge(baseLayer))

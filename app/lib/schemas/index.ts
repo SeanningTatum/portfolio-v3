@@ -4,3 +4,4 @@ export * from "./analytics";
 export * from "./bucket";
 export * from "./auth";
 export * from "./project";
+export * from "./skill";

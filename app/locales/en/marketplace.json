@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "title": "Marketplace — Sean",
+    "description": "Claude Code skills, commands, and agents Sean built agentically."
+  },
+  "title": "Marketplace",
+  "intro": "Skills, commands, and agents for Claude Code — every one of them designed, built, and shipped agentically.",
+  "count_one": "{{count}} tool",
+  "count_other": "{{count}} tools",
+  "search": {
+    "placeholder": "Search tools…",
+    "label": "Search tools"
+  },
+  "sidebar": {
+    "all": "All tools"
+  },
+  "categories": {
+    "engineering": "Engineering",
+    "stack-conventions": "Stack Conventions",
+    "commands": "Commands",
+    "agents": "Agents",
+    "workflow": "Workflow"
+  },
+  "types": {
+    "skill": "Skill",
+    "command": "Command",
+    "agent": "Agent",
+    "rule": "Rule",
+    "hook": "Hook"
+  },
+  "sort": {
+    "label": "Sort",
+    "az": "A – Z",
+    "newFirst": "New first"
+  },
+  "badgeNew": "New",
+  "empty": "No tools match. Try a different search.",
+  "banner": {
+    "title": "Need a custom skill?",
+    "body": "I build Claude Code tooling for real engineering workflows — tell me what yours is missing.",
+    "cta": "Request a tool"
+  }
+}

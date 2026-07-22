@@ -13,14 +13,21 @@
 | `account` | Credential / OAuth accounts | `userId → user.id` (cascade) |
 | `verification` | Email verification tokens | Linked logically by `identifier` (email) |
 | `project` | Portfolio showcase content (feat-008/009) | No FKs — standalone content table |
+| `skill` | Claude skills marketplace content (feat-010) | No FKs — standalone content table |
 
-The first four tables are owned by Better Auth's drizzle adapter. `project` is the first app-specific business table — content for the public `/projects` list (feat-008) and `/projects/:slug` case-study page (feat-009).
+The first four tables are owned by Better Auth's drizzle adapter. `project` is the first app-specific business table — content for the public `/projects` list (feat-008) and `/projects/:slug` case-study page (feat-009). `skill` is the data source for the public `/marketplace` page (feat-010).
 
 ### `project`
 
 `id`, `slug` (unique + indexed), `title`, `summary`, `category` (free text, no enum constraint — validated at the Effect Schema boundary instead so new categories don't need a migration), `year`, `stack` (JSON `text` array), `role`, `thumbnailUrl` (nullable), `featured` (bool, default false), `sortOrder` (int, default 0), plus nullable case-study fields for feat-009: `client`, `heroImageUrl`, `why`, `how`, `solution`, `statsJson` (JSON array of `{ label, value }`). `createdAt`/`updatedAt` per convention.
 
 Repository: `app/repositories/project.ts` (`ProjectRepository.list(filter?)` ordered `featured DESC, sortOrder ASC`; `ProjectRepository.getBySlug(slug)` → `NotFoundError` on miss). Inputs: `app/lib/schemas/project.ts`.
+
+### `skill`
+
+`id`, `slug` (unique + indexed), `name`, `description`, `type` (free text — `"skill" | "command" | "agent" | "rule" | "hook"`, validated at the Effect Schema boundary via `SkillType` literal union, no DB enum), `category` (free text, e.g. `"engineering" | "stack-conventions" | "workflow" | "commands" | "agents"` — no enum constraint), `plugin` (e.g. `"engineering-toolkit"`), `marketplaceRepo` (e.g. `"sean-skills"` | `"seanningtatum-plugins"`), `repoUrl`, `isNew` (bool, default false), `sortOrder` (int, default 0). `createdAt`/`updatedAt` per convention.
+
+Repository: `app/repositories/skill.ts` (`SkillRepository.list(filter?: { category?, type? })` combines both filters with `and()` when given, ordered `sortOrder ASC, name ASC`). Inputs: `app/lib/schemas/skill.ts` (`ListSkillsInput`, `SkillType`). Seeded from `.brain/features/skills-marketplace/skills-inventory.md` via `scripts/seed-preview.ts` — 55 public rows (57 total minus the 2 `example-skill` templates).
 
 ## Entity relationships
 
@@ -32,6 +39,7 @@ user ◄─────┬───── session   (userId, impersonatedBy)
            └─ ─ ─ verification (by identifier=email, no FK)
 
 project (standalone — no FKs)
+skill (standalone — no FKs)
 ```
 
 ## SQLite / Drizzle conventions

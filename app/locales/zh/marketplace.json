@@ -1,0 +1,43 @@
+{
+  "meta": {
+    "title": "技能市场 — Sean",
+    "description": "Sean 以 AI 代理方式构建的 Claude Code 技能、命令与代理。"
+  },
+  "title": "技能市场",
+  "intro": "Claude Code 的技能、命令与代理 — 每一个都以 AI 代理方式设计、构建并交付。",
+  "count_one": "{{count}} 个工具",
+  "count_other": "{{count}} 个工具",
+  "search": {
+    "placeholder": "搜索工具…",
+    "label": "搜索工具"
+  },
+  "sidebar": {
+    "all": "全部工具"
+  },
+  "categories": {
+    "engineering": "工程",
+    "stack-conventions": "技术栈规范",
+    "commands": "命令",
+    "agents": "代理",
+    "workflow": "工作流"
+  },
+  "types": {
+    "skill": "技能",
+    "command": "命令",
+    "agent": "代理",
+    "rule": "规则",
+    "hook": "钩子"
+  },
+  "sort": {
+    "label": "排序",
+    "az": "A – Z",
+    "newFirst": "最新优先"
+  },
+  "badgeNew": "新",
+  "empty": "没有匹配的工具，换个关键词试试。",
+  "banner": {
+    "title": "需要定制技能？",
+    "body": "我为真实的工程工作流打造 Claude Code 工具 — 告诉我你的工作流缺什么。",
+    "cta": "提交需求"
+  }
+}

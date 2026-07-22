@@ -10,6 +10,7 @@ Mounted at `/api/trpc/*`. The top-level router (`app/trpc/router.ts`) composes t
 | `admin` | `app/trpc/routes/admin.ts` | `getUsers`, `getUser`, `updateUser`, `banUser`, `unbanUser`, `deleteUser`, `bulkBanUsers`, `bulkDeleteUsers`, `bulkUpdateUserRoles` |
 | `analytics` | `app/trpc/routes/analytics.ts` | `getUserStats`, `getUserGrowth`, `getRoleDistribution`, `getVerificationDistribution`, `getRecentSignupsCount` |
 | `projects` | `app/trpc/routes/projects.ts` | `list` (public, optional `{ category? }` filter, `ProjectRepository.list` ordered `featured DESC, sortOrder ASC`), `getBySlug` (public, `{ slug }` → project row or `NOT_FOUND`), `getCaseStudy` (public, `{ slug }` → `{ project, prev, next }` for the `/projects/:slug` case-study page (feat-009); `prev`/`next` are `{ slug, title } \| null` from `ProjectRepository.getAdjacent`, same ordering as `list`, wraps around at either end) |
+| `skills` | `app/trpc/routes/skills.ts` | `list` (public, optional `{ category?, type? }` filter — `type` is the `SkillType` literal union, `SkillRepository.list` ordered `sortOrder ASC, name ASC`, for the `/marketplace` page, feat-010) |
 
 Read the route files directly for current input schemas — they're authoritative.
 

@@ -1,6 +1,6 @@
 {
   "$schema": "Machine-readable feature state tracker. Source of truth for status; per-feature MD docs are source of truth for design/runtime.",
-  "updated": "2026-07-21",
+  "updated": "2026-07-22",
   "policy": {
     "one_in_progress_at_a_time": true,
     "definition_of_done": "implementation complete + verify-done passed + feature MD updated + brain coherent"
@@ -137,10 +137,10 @@
       "name": "Skills Marketplace",
       "slug": "skills-marketplace",
       "doc": ".brain/features/skills-marketplace/skills-marketplace.md",
-      "description": "/marketplace page displaying Sean's agentically-created Claude skills/plugins (57 items across sean-skills + seanningtatum-plugins repos), D1-backed: sticky category sidebar, 3-col card grid, search, SF Mono badges. Seed data: .brain/features/skills-marketplace/skills-inventory.md.",
+      "description": "/marketplace page displaying Sean's agentically-created Claude skills/plugins (55 public items across sean-skills + seanningtatum-plugins repos), D1-backed skill table + SkillRepository + skills.list tRPC: sticky category text-list with counts, 3-col card grid, search, sort, SF Mono badges, GitHub outlinks, request-a-tool banner.",
       "dependencies": [],
-      "status": "planned",
-      "evidence": "planned 2026-07-21; inventory extracted from marketplace.json manifests of both repos",
+      "status": "shipped",
+      "evidence": "shipped 2026-07-22; verify-done PASS (typecheck, 295 tests, e2e smoke, build); feature-verifier PASS .brain/features/skills-marketplace/verifications/2026-07-22.md (7/7 golden + empty-search path, 0 js/network errors); enforcer minors fixed (mono labels 800, icon radius 25px); 55-row seed verified in local D1; run note .brain/runs/2026-07-22-skills-marketplace.md (closed)",
       "owners": [
         "sean"
       ]

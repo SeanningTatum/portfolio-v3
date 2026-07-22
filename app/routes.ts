@@ -19,6 +19,7 @@ export default [
   route("/sign-up", "routes/authentication/sign-up.tsx"),
   route("/projects", "routes/projects/index.tsx"),
   route("/projects/:slug", "routes/projects/$slug.tsx"),
+  route("/marketplace", "routes/marketplace/index.tsx"),
 
   // Public routes with locale prefix (for SEO)
   ...prefix(":lng", [
@@ -27,6 +28,7 @@ export default [
     route("/sign-up", "routes/authentication/sign-up.tsx", { id: "lng-sign-up" }),
     route("/projects", "routes/projects/index.tsx", { id: "lng-projects" }),
     route("/projects/:slug", "routes/projects/$slug.tsx", { id: "lng-project-case-study" }),
+    route("/marketplace", "routes/marketplace/index.tsx", { id: "lng-marketplace" }),
   ]),
 
   // Dashboard routes — auth-protected, client-side i18n only

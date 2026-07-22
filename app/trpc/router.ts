@@ -11,6 +11,7 @@ import { ValidationError } from "@/models/errors/repository";
 import { adminRouter } from "./routes/admin";
 import { analyticsRouter } from "./routes/analytics";
 import { projectsRouter } from "./routes/projects";
+import { skillsRouter } from "./routes/skills";
 
 const userRouter = createTRPCRouter({
   // Fix 1 (audit): this was a `publicProcedure` returning full user rows
@@ -84,6 +85,7 @@ export const appRouter = createTRPCRouter({
   admin: adminRouter,
   analytics: analyticsRouter,
   projects: projectsRouter,
+  skills: skillsRouter,
 });
 
 export type AppRouter = typeof appRouter;
