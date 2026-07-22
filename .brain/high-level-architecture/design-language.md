@@ -86,3 +86,14 @@ Refs: Dennis Snellenberg (oversized type as page event), Yinger/Phantom (dark st
 - **Route changes ride view transitions.** Portal `Link viewTransition` + `@view-transition { navigation: auto }` with `vt-out`/`vt-in` (fade + 12-16px vertical slide) in `app.css`.
 - **Load reveal.** `.home-reveal` staggered rise (identity 0ms, availability 250ms, portals 350/450ms). ALL motion (reveal + view transitions) gated behind `prefers-reduced-motion: no-preference`.
 - Nav on home: wordmark + ghost white "Let's talk" only — the portals ARE the nav.
+
+## Amendment — 2026-07-21 OBJECT_02 CRT + ambient sound
+
+- **The object is a series.** `OBJECT_01 — CHROME` (torus knot, retired but kept in git history) → `OBJECT_02 — CRT`: chrome retro terminal (RoundedBox shell, neck + base) whose screen live-types an agentic coding session in phosphor green — CanvasTexture driven by the pure typing machine in `app/lib/crt-script.ts` (script lines, `advanceType`/`visibleLines`, unit-tested). Scanlines + blinking block cursor + glow. Screen must face the viewer: gentle sin sway, never a full spin. Energy (portal hover) speeds typing 13→46 cps + flares lasers.
+- **Ambient sound.** `public/audio/ambient.mp3` (23s calm ambient, HeyGen catalog via media-use, faded ends, 96kbps ~277KB, ledger `.media/manifest.jsonl`). `SoundToggle` (`app/components/sound-toggle.tsx`) in the mono label stack under GMT+8: gesture-gated (autoplay policy), starts OFF every visit, volume 0.3, loops, stops on unmount. Label text = design token.
+
+## Amendment — 2026-07-21 boot loader + WebGL stability rules
+
+- **NEVER use drei `<Environment preset>` (HDR) in this project.** The HDR fetch + PMREM generation blew up the WebGL context (~2.5s after load → scene vanished — "shows for a split second" bug) and pulled from a CDN at runtime. Use the procedural Lightformer environment in `hero-scene.client.tsx` (`<Environment resolution={128} frames={1}>` + 4 Lightformer softboxes) — local, cheap, chrome stays reflective.
+- **Context-loss guard.** `ContextGuard` (in `hero-scene.client.tsx`) listens for `webglcontextlost` (preventDefault → allow restore) / `webglcontextrestored`; reports dead only after 3s without restore.
+- **Boot loader.** `BootLoader` (`app/components/boot-loader.tsx`) — fullscreen ink plate over the home console: `OBJECT_02 — CRT` mono label, indeterminate hairline sweep, `BOOTING RENDER █` blink. Dismissed by the scene's real first rendered frame (`onFirstFrame` via useFrame first tick), by permanent context loss, or by a 5s hard timeout (`BOOT_TIMEOUT_MS` in `home.tsx`) — a dead GPU must never trap visitors, the dark stage + portals are a complete page. 600ms opacity fade, then unmount. Sweep/blink gated behind `prefers-reduced-motion: no-preference`.

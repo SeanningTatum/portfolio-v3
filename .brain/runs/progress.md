@@ -21,6 +21,20 @@
 
 ---
 
+## 2026-07-21 — render-vanish bug fixed + boot loader shipped
+- branch: `main` (no commits yet)
+- root cause (user-reported "shows split second then gone"): drei `Environment preset="studio"` HDR + PMREM **lost the WebGL context** ~2.5s after load — proven by isContextLost() probe (lost:true), bisect (env off → lost:false). Replaced with procedural Lightformer env (resolution 128, frames 1, 4 softboxes) — no CDN, cheap, chrome still reflective. Context alive at t+18s post-fix.
+- also shipped: ContextGuard (contextlost/restored listeners, preventDefault for restore), fullscreen BootLoader (ink plate, hairline sweep, BOOTING RENDER █) dismissed by real first frame / permanent context loss / 5s timeout; reduced-motion gated
+- verified: loader shows → dismisses (probe), screenshot on-brand, typecheck/282 tests/build green
+- next: user re-checks on real GPU; first commit; feat-010 marketplace
+
+## 2026-07-21 — OBJECT_02 CRT terminal + ambient sound shipped
+- branch: `main` (no commits yet)
+- in-progress feature: none (home creative iteration cont.)
+- shipped: chrome CRT replaces torus knot — phosphor screen live-types agentic session (crt-script.ts pure machine, +9 tests = 282), scanlines/cursor/glow, sway + parallax, energy speeds typing; ambient BGM (media-use → HeyGen catalog, 277KB faded loop, public/audio/ambient.mp3) behind gesture-gated SoundToggle
+- verified: typecheck/282 tests/build green; layout screenshot clean, canvas mounts, no JS errors; CRT pixels + audio need real-GPU/user ear check
+- next: user eyeball+listen; first commit; feat-010 marketplace
+
 ## 2026-07-21 — "console" home shipped (user-directed creative pass)
 - branch: `main` (no commits yet)
 - in-progress feature: none (home = feat-007 surface, creative iteration)

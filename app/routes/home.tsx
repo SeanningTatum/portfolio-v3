@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 
+import { BootLoader } from "@/components/boot-loader";
 import { HeroScene } from "@/components/hero-scene";
+import { SoundToggle } from "@/components/sound-toggle";
 import { cn } from "@/lib/utils";
 import type { Route } from "./+types/home";
+
+/** Give a dead/absent GPU this long before dropping the boot screen anyway. */
+const BOOT_TIMEOUT_MS = 5000;
 
 export const handle = { i18n: ["home", "projects"] };
 
@@ -32,19 +37,33 @@ export default function Home() {
   const { t } = useTranslation("home");
   const { t: tNav } = useTranslation("projects");
   const [energy, setEnergy] = useState(0);
+  const [booted, setBooted] = useState(false);
 
   const excite = () => setEnergy(1);
   const calm = () => setEnergy(0);
+  const markBooted = useCallback(() => setBooted(true), []);
+
+  // A GPU that never produces a frame (or loses its context for good) must
+  // not trap visitors behind the boot screen — the dark stage + portals are
+  // a complete page on their own.
+  useEffect(() => {
+    const timer = setTimeout(markBooted, BOOT_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [markBooted]);
 
   return (
     <div
       data-testid="home-hero"
       className="relative flex min-h-svh flex-col overflow-hidden bg-[#141416]"
     >
+      <BootLoader done={booted} />
+
       {/* The render is the page — full-bleed, behind everything */}
       <HeroScene
         transparent
         energy={energy}
+        onFirstFrame={markBooted}
+        onContextLost={markBooted}
         className="absolute inset-0 h-auto w-auto"
       />
 
@@ -80,7 +99,10 @@ export default function Home() {
       </div>
 
       {/* Corner labels — on the stage */}
-      <StageLabel className="top-24 right-6 sm:right-10">GMT+8</StageLabel>
+      <div className="absolute top-24 right-6 z-10 flex flex-col items-end gap-2 sm:right-10">
+        <StageLabel className="static">GMT+8</StageLabel>
+        <SoundToggle />
+      </div>
       <StageLabel className="top-1/2 left-6 hidden -translate-y-1/2 sm:block sm:left-10">
         v3.0
       </StageLabel>

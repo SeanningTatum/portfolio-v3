@@ -17,7 +17,7 @@ function SceneFallback() {
   return (
     <div aria-hidden className="relative h-full w-full select-none">
       <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-mono text-[10px] font-extrabold tracking-[0.2em] text-white/35 uppercase">
-        rendering —
+        object_02 — crt · rendering
       </span>
     </div>
   );
@@ -29,6 +29,10 @@ interface HeroSceneProps {
   energy?: number;
   /** Skip the dark plate when the parent already provides the dark stage. */
   transparent?: boolean;
+  /** Fires once when the first WebGL frame has actually rendered. */
+  onFirstFrame?: () => void;
+  /** Fires if the WebGL context dies and isn't restored. */
+  onContextLost?: () => void;
 }
 
 /**
@@ -41,6 +45,8 @@ export function HeroScene({
   className,
   energy = 0,
   transparent = false,
+  onFirstFrame,
+  onContextLost,
 }: HeroSceneProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -59,7 +65,11 @@ export function HeroScene({
     >
       {mounted ? (
         <Suspense fallback={<SceneFallback />}>
-          <HeroSceneCanvas energy={energy} />
+          <HeroSceneCanvas
+            energy={energy}
+            onFirstFrame={onFirstFrame}
+            onContextLost={onContextLost}
+          />
         </Suspense>
       ) : (
         <SceneFallback />
