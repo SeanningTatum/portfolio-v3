@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Lightformer, RoundedBox } from "@react-three/drei";
+import {
+  ContactShadows,
+  Environment,
+  Lightformer,
+  RoundedBox,
+} from "@react-three/drei";
 import { CanvasTexture, type Group, type MeshBasicMaterial } from "three";
 
 import { approach, parallaxTarget, spinSpeed } from "@/lib/hero-scene-utils";
@@ -28,25 +33,75 @@ const HOLD_AFTER_COMPLETE_S = 2.6;
 export interface HeroSceneCanvasProps {
   /** 0 = idle, 1 = a portal CTA is hovered — typing speeds up, lasers flare. */
   energy?: number;
+  /** Emoji to project on the CRT while a portal is hovered (null = none). */
+  emoji?: string | null;
   /** Fires once, on the first successfully rendered frame. */
   onFirstFrame?: () => void;
   /** Fires if the WebGL context is lost and doesn't come back. */
   onContextLost?: () => void;
 }
 
+/**
+ * Render an emoji as a phosphor sprite: tiny offscreen draw → green multiply
+ * (keeping luminance detail) → nearest-neighbor upscale for chunky CRT
+ * pixels. Cached per emoji — the pipeline only reruns when it changes.
+ */
+const spriteCache = new Map<string, HTMLCanvasElement>();
+function phosphorSprite(emoji: string): HTMLCanvasElement {
+  const hit = spriteCache.get(emoji);
+  if (hit) return hit;
+  const tiny = document.createElement("canvas");
+  tiny.width = 48;
+  tiny.height = 48;
+  const tctx = tiny.getContext("2d")!;
+  // Grayscale first where supported, so the multiply keeps shading detail.
+  tctx.filter = "grayscale(1)";
+  tctx.font = "38px system-ui, sans-serif";
+  tctx.textAlign = "center";
+  tctx.textBaseline = "middle";
+  tctx.fillText(emoji, 24, 27);
+  tctx.filter = "none";
+  tctx.globalCompositeOperation = "multiply";
+  tctx.fillStyle = NEON_GREEN;
+  tctx.fillRect(0, 0, 48, 48);
+  tctx.globalCompositeOperation = "destination-in";
+  tctx.fillText(emoji, 24, 27);
+  spriteCache.set(emoji, tiny);
+  return tiny;
+}
+
 /** Draw the phosphor terminal frame onto the offscreen 2D canvas. */
 function drawScreen(
   ctx: CanvasRenderingContext2D,
   state: TypeState,
-  cursorOn: boolean
+  cursorOn: boolean,
+  time: number,
+  emoji: string | null,
+  emojiAlpha: number
 ) {
-  ctx.fillStyle = PHOSPHOR_BG;
+  // Faint green-black tube glow — brighter center, darker edges.
+  const bg = ctx.createRadialGradient(
+    SCREEN_W / 2,
+    SCREEN_H / 2,
+    SCREEN_H / 5,
+    SCREEN_W / 2,
+    SCREEN_H / 2,
+    SCREEN_W / 1.4
+  );
+  bg.addColorStop(0, "#0c130c");
+  bg.addColorStop(1, "#050705");
+  ctx.fillStyle = bg;
   ctx.fillRect(0, 0, SCREEN_W, SCREEN_H);
+
+  // Phosphor flicker — tiny brightness wobble, the tube never sits still.
+  // The terminal crossfades OUT as the portal emoji takes over the screen.
+  const flicker = 0.93 + 0.07 * Math.sin(time * 23) * Math.sin(time * 7.3);
+  ctx.globalAlpha = flicker * (1 - emojiAlpha);
 
   ctx.font = "700 22px ui-monospace, SFMono-Regular, Menlo, monospace";
   ctx.textBaseline = "top";
   ctx.shadowColor = NEON_GREEN;
-  ctx.shadowBlur = 10;
+  ctx.shadowBlur = 12;
   ctx.fillStyle = NEON_GREEN;
 
   const rows = visibleLines(state, SCREEN_ROWS);
@@ -64,13 +119,50 @@ function drawScreen(
     const y = padY + Math.max(0, rows.length - 1) * lineH;
     ctx.fillRect(x, y + 2, 13, 26);
   }
+  ctx.globalAlpha = 1;
 
-  // Scanlines — the CRT signature.
+  // Portal emoji — takes over the screen as a centered phosphor sprite
+  // (terminal text crossfades out above), glowing like everything else on
+  // the tube. Scanlines and vignette (below) roll over it so it belongs.
+  if (emoji && emojiAlpha > 0.02) {
+    const sprite = phosphorSprite(emoji);
+    const size = 230 + 12 * Math.sin(time * 2.2); // slow breathing
+    ctx.save();
+    ctx.imageSmoothingEnabled = false; // chunky CRT pixels
+    ctx.globalAlpha = emojiAlpha;
+    ctx.shadowColor = NEON_GREEN;
+    ctx.shadowBlur = 26;
+    ctx.drawImage(
+      sprite,
+      (SCREEN_W - size) / 2,
+      (SCREEN_H - size) / 2,
+      size,
+      size
+    );
+    ctx.restore();
+  }
+
+  // Scanlines — the CRT signature (slow vertical roll, like a real tube).
   ctx.shadowBlur = 0;
-  ctx.fillStyle = "rgba(0, 0, 0, 0.22)";
-  for (let y = 0; y < SCREEN_H; y += 4) {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.28)";
+  const roll = Math.floor((time * 10) % 4);
+  for (let y = -4 + roll; y < SCREEN_H; y += 4) {
     ctx.fillRect(0, y, SCREEN_W, 2);
   }
+
+  // Curved-glass vignette — dark corners sell the tube bulge.
+  const vig = ctx.createRadialGradient(
+    SCREEN_W / 2,
+    SCREEN_H / 2,
+    SCREEN_H / 2.4,
+    SCREEN_W / 2,
+    SCREEN_H / 2,
+    SCREEN_W / 1.25
+  );
+  vig.addColorStop(0, "rgba(0,0,0,0)");
+  vig.addColorStop(1, "rgba(0,0,0,0.55)");
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, SCREEN_W, SCREEN_H);
 }
 
 /**
@@ -79,12 +171,13 @@ function drawScreen(
  * the object itself). The monitor sways gently and follows the pointer;
  * portal-CTA energy speeds the typing and flares the lasers behind it.
  */
-function CrtSculpture({ energy = 0, onFirstFrame }: HeroSceneCanvasProps) {
+function CrtSculpture({ energy = 0, emoji = null, onFirstFrame }: HeroSceneCanvasProps) {
   const group = useRef<Group>(null);
   const sway = useRef<Group>(null);
   const laserA = useRef<MeshBasicMaterial>(null);
   const laserB = useRef<MeshBasicMaterial>(null);
   const eased = useRef(0);
+  const lastEmoji = useRef<string | null>(null);
   const firedFirstFrame = useRef(false);
   const type = useRef<{ state: TypeState; carry: number; hold: number }>({
     state: INITIAL_TYPE_STATE,
@@ -128,9 +221,18 @@ function CrtSculpture({ energy = 0, onFirstFrame }: HeroSceneCanvasProps) {
       }
     }
 
-    // Redraw the phosphor screen (cursor blinks at ~1.9Hz).
+    // Redraw the phosphor screen (cursor blinks at ~1.9Hz). The emoji fades
+    // with the eased energy — remember the last one so it fades OUT too.
+    if (emoji) lastEmoji.current = emoji;
     const cursorOn = Math.floor(state.clock.elapsedTime * 1.9) % 2 === 0;
-    drawScreen(ctx, t.state, cursorOn);
+    drawScreen(
+      ctx,
+      t.state,
+      cursorOn,
+      state.clock.elapsedTime,
+      lastEmoji.current,
+      eased.current
+    );
     texture.needsUpdate = true;
 
     // Gentle sway — the screen must keep facing the viewer, so no full spin.
@@ -161,9 +263,9 @@ function CrtSculpture({ energy = 0, onFirstFrame }: HeroSceneCanvasProps) {
 
   return (
     <group ref={group}>
-      <group ref={sway} position={[0, 0.12, 0]}>
-        {/* Monitor shell — chrome */}
-        <RoundedBox args={[2.7, 2.05, 1.5]} radius={0.14} smoothness={4}>
+      <group ref={sway} position={[0, 0.18, 0]}>
+        {/* Front shell — boxy 80s bezel, chrome */}
+        <RoundedBox args={[2.7, 2.05, 1.0]} radius={0.1} smoothness={4}>
           <meshPhysicalMaterial
             color={CHROME_WHITE}
             metalness={1}
@@ -172,18 +274,45 @@ function CrtSculpture({ energy = 0, onFirstFrame }: HeroSceneCanvasProps) {
             clearcoatRoughness={0.14}
           />
         </RoundedBox>
+        {/* Rear tube hump — the retro silhouette */}
+        <RoundedBox
+          args={[2.15, 1.65, 1.3]}
+          radius={0.18}
+          smoothness={4}
+          position={[0, 0.05, -0.85]}
+        >
+          <meshPhysicalMaterial
+            color={CHROME_WHITE}
+            metalness={1}
+            roughness={0.14}
+            clearcoat={1}
+            clearcoatRoughness={0.2}
+          />
+        </RoundedBox>
         {/* Screen bezel inset */}
-        <RoundedBox args={[2.3, 1.68, 0.1]} radius={0.06} position={[0, 0.02, 0.72]}>
+        <RoundedBox args={[2.3, 1.62, 0.1]} radius={0.06} position={[0, 0.09, 0.47]}>
           <meshStandardMaterial color="#1b1d1b" metalness={0.4} roughness={0.6} />
         </RoundedBox>
         {/* Phosphor screen — live canvas texture, emissive (unlit + untone-mapped) */}
-        <mesh position={[0, 0.02, 0.785]}>
-          <planeGeometry args={[2.08, 1.5]} />
+        <mesh position={[0, 0.09, 0.535]}>
+          <planeGeometry args={[2.08, 1.44]} />
           <meshBasicMaterial map={texture} toneMapped={false} />
         </mesh>
-        {/* Neck + base — chrome */}
-        <mesh position={[0, -1.25, -0.1]}>
-          <cylinderGeometry args={[0.22, 0.28, 0.5, 24]} />
+        {/* Vent slits under the screen — 80s front-panel detail */}
+        {[-0.55, -0.3, -0.05].map((x) => (
+          <mesh key={x} position={[x, -0.86, 0.505]}>
+            <boxGeometry args={[0.2, 0.035, 0.02]} />
+            <meshStandardMaterial color="#26282a" metalness={0.3} roughness={0.7} />
+          </mesh>
+        ))}
+        {/* Power LED — the one neon dot on the hardware */}
+        <mesh position={[1.08, -0.86, 0.505]}>
+          <cylinderGeometry args={[0.035, 0.035, 0.02, 16]} />
+          <meshBasicMaterial color={NEON_GREEN} toneMapped={false} />
+        </mesh>
+        {/* Chunky wedge base — no slim modern stand */}
+        <mesh position={[0, -1.22, 0]}>
+          <boxGeometry args={[1.9, 0.22, 1.35]} />
           <meshPhysicalMaterial
             color={CHROME_WHITE}
             metalness={1}
@@ -191,12 +320,12 @@ function CrtSculpture({ energy = 0, onFirstFrame }: HeroSceneCanvasProps) {
             clearcoat={1}
           />
         </mesh>
-        <mesh position={[0, -1.55, -0.1]}>
-          <cylinderGeometry args={[0.85, 0.95, 0.14, 40]} />
+        <mesh position={[0, -1.38, 0.05]}>
+          <boxGeometry args={[2.15, 0.14, 1.55]} />
           <meshPhysicalMaterial
             color={CHROME_WHITE}
             metalness={1}
-            roughness={0.12}
+            roughness={0.16}
             clearcoat={1}
           />
         </mesh>
@@ -259,6 +388,7 @@ function ContextGuard({ onContextLost }: { onContextLost?: () => void }) {
 
 export default function HeroSceneCanvas({
   energy = 0,
+  emoji = null,
   onFirstFrame,
   onContextLost,
 }: HeroSceneCanvasProps) {
@@ -271,7 +401,25 @@ export default function HeroSceneCanvas({
       gl={{ antialias: true, alpha: true }}
     >
       <ContextGuard onContextLost={onContextLost} />
-      <CrtSculpture energy={energy} onFirstFrame={onFirstFrame} />
+      <CrtSculpture energy={energy} emoji={emoji} onFirstFrame={onFirstFrame} />
+      {/* Premium grounding: soft contact shadow pools the monitor onto the
+          stage. frames={1} renders it once — cheap, context-safe. */}
+      <ContactShadows
+        position={[0, -1.62, 0]}
+        opacity={0.5}
+        scale={7}
+        blur={2.6}
+        far={2}
+        resolution={256}
+        frames={1}
+      />
+      {/* Phosphor spill — the screen's green faintly lighting the hardware. */}
+      <pointLight
+        color={NEON_GREEN}
+        intensity={2.2}
+        distance={4.5}
+        position={[0, -0.4, 1.6]}
+      />
       {/*
         Procedural studio environment — drei Lightformers rendered once to a
         small cubemap. Replaces the HDR `preset="studio"`: the HDR fetch +

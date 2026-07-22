@@ -27,6 +27,8 @@ interface HeroSceneProps {
   className?: string;
   /** 0 = idle, 1 = a portal CTA is hovered (scene spins up, lasers flare). */
   energy?: number;
+  /** Emoji projected on the CRT screen while a portal is hovered. */
+  emoji?: string | null;
   /** Skip the dark plate when the parent already provides the dark stage. */
   transparent?: boolean;
   /** Fires once when the first WebGL frame has actually rendered. */
@@ -44,6 +46,7 @@ interface HeroSceneProps {
 export function HeroScene({
   className,
   energy = 0,
+  emoji = null,
   transparent = false,
   onFirstFrame,
   onContextLost,
@@ -67,6 +70,7 @@ export function HeroScene({
         <Suspense fallback={<SceneFallback />}>
           <HeroSceneCanvas
             energy={energy}
+            emoji={emoji}
             onFirstFrame={onFirstFrame}
             onContextLost={onContextLost}
           />

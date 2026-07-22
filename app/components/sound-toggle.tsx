@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { IconVolume, IconVolumeOff } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -46,11 +47,16 @@ export function SoundToggle({ className }: { className?: string }) {
       aria-pressed={playing}
       aria-label={playing ? "Turn ambient sound off" : "Turn ambient sound on"}
       className={cn(
-        "font-mono text-[10px] font-extrabold tracking-[0.2em] uppercase transition-colors",
+        "flex items-center gap-1.5 font-mono text-[10px] font-extrabold tracking-[0.2em] uppercase transition-colors",
         playing ? "text-pure-white" : "text-white/40 hover:text-white/70",
         className
       )}
     >
+      {playing ? (
+        <IconVolume className="size-3.5" aria-hidden />
+      ) : (
+        <IconVolumeOff className="size-3.5" aria-hidden />
+      )}
       {playing ? "sound — on" : "sound — off"}
     </button>
   );
