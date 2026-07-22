@@ -1,0 +1,14 @@
+{
+  "hero": {
+    "name": "Sean Urgel",
+    "role": "Full-stack engineer building agentic products.",
+    "location": "Manila, Philippines",
+    "availability": "Available for select projects"
+  },
+  "portals": {
+    "work": "Work",
+    "work_hint": "Case studies",
+    "marketplace": "Marketplace",
+    "marketplace_hint": "Agentic skills"
+  }
+}

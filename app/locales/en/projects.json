@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "title": "Work — Sean",
+    "description": "Selected projects, tools, and experiments."
+  },
+  "nav": {
+    "wordmark": "Sean",
+    "projects": "Projects",
+    "marketplace": "Marketplace",
+    "cta": "Let's talk"
+  },
+  "title": "Work",
+  "count_one": "{{count}} project",
+  "count_other": "{{count}} projects",
+  "filters": {
+    "all": "All"
+  },
+  "empty": "No projects match this filter.",
+  "caseStudy": {
+    "prev": "Previous",
+    "next": "Next",
+    "notFound": {
+      "title": "Project not found",
+      "message": "We couldn't find a case study at this address.",
+      "back": "Back to projects"
+    }
+  }
+}

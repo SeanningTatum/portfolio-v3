@@ -1,0 +1,149 @@
+{
+  "$schema": "Machine-readable feature state tracker. Source of truth for status; per-feature MD docs are source of truth for design/runtime.",
+  "updated": "2026-07-21",
+  "policy": {
+    "one_in_progress_at_a_time": true,
+    "definition_of_done": "implementation complete + verify-done passed + feature MD updated + brain coherent"
+  },
+  "features": [
+    {
+      "id": "feat-001",
+      "name": "Authentication",
+      "slug": "authentication",
+      "doc": ".brain/features/authentication/authentication.md",
+      "description": "Email/password auth with role-based access (user/admin) and ban system, Better Auth + D1 + Drizzle.",
+      "dependencies": [],
+      "status": "shipped",
+      "evidence": "shipped 2026-05-07; tests: app/repositories/__tests__/user.test.ts; e2e gap noted",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-002",
+      "name": "Admin Dashboard",
+      "slug": "admin-dashboard",
+      "doc": ".brain/features/admin-dashboard/admin-dashboard.md",
+      "description": "Admin-only area at /admin/* for user management and analytics; data-side gating via adminProcedure.",
+      "dependencies": [
+        "feat-001"
+      ],
+      "status": "shipped",
+      "evidence": "shipped 2026-05-07; known gap: layout has no loader auth gate (data-side only)",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-003",
+      "name": "File Upload",
+      "slug": "file-upload",
+      "doc": ".brain/features/file-upload/file-upload.md",
+      "description": "Server-side multipart upload to Cloudflare R2 via /api/upload-file using BucketRepository.",
+      "dependencies": [],
+      "status": "shipped",
+      "evidence": "shipped 2026-05-07; tests: app/repositories/__tests__/bucket.test.ts",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-004",
+      "name": "Analytics",
+      "slug": "analytics",
+      "doc": ".brain/features/analytics/analytics.md",
+      "description": "Read-only admin analytics at /admin: user growth, role + verification distribution, recent signups.",
+      "dependencies": [
+        "feat-001",
+        "feat-002"
+      ],
+      "status": "shipped",
+      "evidence": "shipped 2026-05-07; AnalyticsRepository runs queries with Effect.all unbounded concurrency",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-005",
+      "name": "Preview Deployments",
+      "slug": "preview-deployments",
+      "doc": ".brain/features/preview-deployments/preview-deployments.md",
+      "description": "Per-PR preview deployments on Cloudflare Workers: dedicated `preview` wrangler environment (isolated worker/D1/R2/workflow) + GitHub Actions workflow uploading versions with `--preview-alias pr-<N>` for stable preview URLs.",
+      "dependencies": [],
+      "status": "shipped",
+      "evidence": "shipped 2026-07-11; live-verified: per-PR D1 (pr-999 binding test), alias URL auth signup 200 on pr-test, prod signup 200; run note .brain/features/preview-deployments/runs/2026-07-10-preview-deployments.md; workflows .github/workflows/preview.yml + preview-cleanup.yml",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-006",
+      "name": "Feature Verification",
+      "slug": "feature-verification",
+      "doc": ".brain/features/feature-verification/feature-verification.md",
+      "description": "feature-verifier sub-agent drives the live app via the Playwright CLI (throwaway headless script), screenshots the golden + one error path, and writes a per-feature verdict doc. Replaces per-feature e2e specs; thin CI smoke specs remain the regression net.",
+      "dependencies": [
+        "feat-001"
+      ],
+      "status": "shipped",
+      "evidence": "shipped 2026-07-13; self-verified: .brain/features/authentication/verifications/2026-07-13.md (PASS); harness-check 11/11; hardened clean-browser launch after dry-run extension artifact; agent .claude/agents/feature-verifier.md",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-007",
+      "name": "Home 3D Hero",
+      "slug": "home-3d-hero",
+      "doc": ".brain/features/home-3d-hero/home-3d-hero.md",
+      "description": "Minimalist desktop.fm-style landing: React Three Fiber chrome 3D object with neon-green laser accents inside a macOS-chrome white card, monochrome UI, name/role headline, SF Mono corner labels. Design spec: .brain/high-level-architecture/design-language.md.",
+      "dependencies": [],
+      "status": "shipped",
+      "evidence": "shipped 2026-07-21; built in parallel with feat-009 (user-approved; status flipped planned->shipped at close to preserve one-in-progress invariant); verify-done PASS (268 tests, build — three.js stripped from Workers bundle via .client module); feature-verifier PASS .brain/features/home-3d-hero/verifications/2026-07-21.md (7/7 golden, 0 jsErrors; CAVEAT: 3D pixels unverifiable in software-WebGL sandbox — needs one manual GPU spot check); run note .brain/runs/2026-07-21-home-3d-hero.md (retroactive, closed); not yet committed/deployed",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-008",
+      "name": "Projects Showcase",
+      "slug": "projects-showcase",
+      "doc": ".brain/features/projects-showcase/projects-showcase.md",
+      "description": "/projects list page: D1-backed project table (Drizzle), tRPC read endpoints, 2-col white-card grid with macOS-chrome thumbnails, filter pills, SF Mono meta (YEAR·STACK·ROLE), featured card per 4 items.",
+      "dependencies": [],
+      "status": "shipped",
+      "evidence": "shipped 2026-07-21; verify-done PASS (typecheck, 244 tests, e2e smoke green on retry after cold-start flake, build); feature-verifier PASS .brain/features/projects-showcase/verifications/2026-07-21.md (9/9 golden + error path, 0 js/network errors); enforcer findings fixed (schema tests app/lib/schemas/__tests__/project.test.ts + index re-export); run note .brain/runs/2026-07-21-projects-showcase.md (closed); not yet committed/deployed",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-009",
+      "name": "Project Case Study",
+      "slug": "project-case-study",
+      "doc": ".brain/features/project-case-study/project-case-study.md",
+      "description": "/projects/:id detail: WHY / HOW / SOLUTION sections in ~680px reading column with sticky SF Mono TOC, meta grid (CLIENT/ROLE/STACK/YEAR), stats row, prev/next footer. Content from D1 (same project table + case-study fields).",
+      "dependencies": [
+        "feat-008"
+      ],
+      "status": "shipped",
+      "evidence": "shipped 2026-07-21; verify-done PASS (typecheck, 268 tests, e2e retry-green after documented cold-start flake, build); feature-verifier PASS .brain/features/project-case-study/verifications/2026-07-21.md (8/8 golden + null-field + 404 paths); enforcer resolved — loader not-found pattern codified in rules/routes.md; run note .brain/runs/2026-07-21-project-case-study.md (closed); not yet committed/deployed",
+      "owners": [
+        "sean"
+      ]
+    },
+    {
+      "id": "feat-010",
+      "name": "Skills Marketplace",
+      "slug": "skills-marketplace",
+      "doc": ".brain/features/skills-marketplace/skills-marketplace.md",
+      "description": "/marketplace page displaying Sean's agentically-created Claude skills/plugins (57 items across sean-skills + seanningtatum-plugins repos), D1-backed: sticky category sidebar, 3-col card grid, search, SF Mono badges. Seed data: .brain/features/skills-marketplace/skills-inventory.md.",
+      "dependencies": [],
+      "status": "planned",
+      "evidence": "planned 2026-07-21; inventory extracted from marketplace.json manifests of both repos",
+      "owners": [
+        "sean"
+      ]
+    }
+  ]
+}

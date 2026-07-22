@@ -1,0 +1,14 @@
+{
+  "hero": {
+    "name": "Sean Urgel",
+    "role": "全栈工程师，专注打造 agentic 产品。",
+    "location": "菲律宾 · 马尼拉",
+    "availability": "可承接精选项目"
+  },
+  "portals": {
+    "work": "作品",
+    "work_hint": "案例研究",
+    "marketplace": "工具市场",
+    "marketplace_hint": "Agentic 技能"
+  }
+}

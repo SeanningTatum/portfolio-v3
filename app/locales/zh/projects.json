@@ -1,0 +1,28 @@
+{
+  "meta": {
+    "title": "作品 — Sean",
+    "description": "精选项目、工具与实验。"
+  },
+  "nav": {
+    "wordmark": "Sean",
+    "projects": "作品",
+    "marketplace": "市场",
+    "cta": "联系我"
+  },
+  "title": "作品",
+  "count_one": "{{count}} 个项目",
+  "count_other": "{{count}} 个项目",
+  "filters": {
+    "all": "全部"
+  },
+  "empty": "没有符合该筛选条件的项目。",
+  "caseStudy": {
+    "prev": "上一个",
+    "next": "下一个",
+    "notFound": {
+      "title": "未找到项目",
+      "message": "我们找不到该地址对应的案例研究。",
+      "back": "返回作品列表"
+    }
+  }
+}
