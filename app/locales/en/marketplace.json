@@ -19,7 +19,8 @@
     "stack-conventions": "Stack Conventions",
     "commands": "Commands",
     "agents": "Agents",
-    "workflow": "Workflow"
+    "workflow": "Workflow",
+    "marketing": "Marketing"
   },
   "types": {
     "skill": "Skill",

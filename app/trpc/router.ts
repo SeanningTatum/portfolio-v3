@@ -10,7 +10,6 @@ import {
 import { ValidationError } from "@/models/errors/repository";
 import { adminRouter } from "./routes/admin";
 import { analyticsRouter } from "./routes/analytics";
-import { projectsRouter } from "./routes/projects";
 import { skillsRouter } from "./routes/skills";
 
 const userRouter = createTRPCRouter({
@@ -84,7 +83,6 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   admin: adminRouter,
   analytics: analyticsRouter,
-  projects: projectsRouter,
   skills: skillsRouter,
 });
 

@@ -84,44 +84,10 @@ export const verification = sqliteTable("verification", {
     .notNull(),
 });
 
-export const project = sqliteTable("project", {
-  id: text("id").primaryKey(),
-  slug: text("slug").notNull().unique(),
-  title: text("title").notNull(),
-  summary: text("summary").notNull(),
-  // Free-text category (e.g. "saas" | "tooling" | "experiment") — no enum
-  // constraint at the DB layer, validated at the Effect Schema boundary
-  // instead so new categories don't require a migration.
-  category: text("category").notNull(),
-  year: integer("year").notNull(),
-  stack: text("stack", { mode: "json" }).$type<string[]>().notNull(),
-  role: text("role").notNull(),
-  thumbnailUrl: text("thumbnail_url"),
-  featured: integer("featured", { mode: "boolean" }).default(false).notNull(),
-  sortOrder: integer("sort_order").default(0).notNull(),
-
-  // Case-study fields (feat-009) — nullable until a project's detail page is
-  // authored.
-  client: text("client"),
-  heroImageUrl: text("hero_image_url"),
-  why: text("why"),
-  how: text("how"),
-  solution: text("solution"),
-  statsJson: text("stats_json", { mode: "json" }).$type<
-    { label: string; value: string }[]
-  >(),
-
-  createdAt: integer("created_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
-
-export type Project = typeof project.$inferSelect;
-export type NewProject = typeof project.$inferInsert;
+// NOTE: projects are no longer a D1 table. Portfolio project content
+// (feat-008/009) now lives in bundled markdown under `content/projects/*.md`,
+// parsed + validated at build time by `app/lib/content/projects.ts`. The old
+// `project` table was dropped in migration `drizzle/0003_*`.
 
 export const skill = sqliteTable("skill", {
   id: text("id").primaryKey(),

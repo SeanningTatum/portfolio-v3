@@ -25,6 +25,7 @@ const APP_ERROR_TAGS = new Set<AppError["_tag"]>([
   "BucketListError",
   "BucketValidationError",
   "WorkflowTriggerError",
+  "ContentParseError",
 ]);
 
 // Compile-time exhaustiveness guard for `appErrorToTRPC`'s switch. Reachable
@@ -146,6 +147,14 @@ const appErrorToTRPC = (e: AppError): TRPCError => {
         code: "INTERNAL_SERVER_ERROR",
         message: `Failed to trigger workflow: ${e.name}`,
         cause: e.cause,
+      });
+    case "ContentParseError":
+      // Content is trusted build-time data, so this never reaches a client
+      // in practice (parsing happens at module load, not in a procedure) —
+      // mapped here defensively so every tagged error has a tRPC mapping.
+      return new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: `Failed to parse content: ${e.file}`,
       });
     default:
       return assertNever(e);

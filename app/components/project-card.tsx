@@ -4,10 +4,10 @@ import { MacosFrame } from "@/components/macos-frame";
 import { ProjectCover } from "@/components/project-cover";
 import { getProjectMeta } from "@/lib/project-meta";
 import { cn } from "@/lib/utils";
-import type { Project } from "@/db/schema";
+import type { ProjectContent } from "@/lib/schemas/project";
 
 interface ProjectCardProps {
-  project: Project;
+  project: ProjectContent;
   /**
    * Full-width horizontal treatment for the one featured card per grid
    * (design spec: "/projects (list)" — one full-width featured card per 4

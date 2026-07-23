@@ -3,7 +3,7 @@
 _Last updated: 2026-07-22_
 
 ## Purpose
-`/marketplace` page displaying all Claude skills/plugins Sean has created agentically — 57 items across `sean-skills` and `seanningtatum-plugins` marketplaces. Seed data: `.brain/features/skills-marketplace/skills-inventory.md`. Spec: `.brain/high-level-architecture/design-language.md` (marketplace section).
+`/marketplace` page displaying Claude skills Sean has created agentically — 7 real skills (6 `engineering-toolkit` + 1 `marketing-toolkit`) in the `sean-skills` marketplace (`github.com/SeanningTatum/marketplace`). Pruned 2026-07-22 (user-directed) from an earlier 55-item catalog that also included the unpublished `seanningtatum-plugins` repo — see `.brain/features/skills-marketplace/skills-inventory.md` for the decision record. Seed data: `.brain/features/skills-marketplace/skills-inventory.md`. Spec: `.brain/high-level-architecture/design-language.md` (marketplace section).
 
 ## When It's Used
 - Visitor navigates to /marketplace (public)
@@ -14,7 +14,7 @@ Loader calls tRPC `skills.list` (full unfiltered set — same pattern as /projec
 
 ### Persistence details
 - Storage: D1 table `skill`: id, slug, name, description, type (skill|command|agent|rule|hook), category, plugin, marketplaceRepo, repoUrl, isNew, sortOrder
-- Seeded from skills-inventory.md via `scripts/seed-preview.ts` (exclude example-skill templates)
+- Seeded from skills-inventory.md via `scripts/seed-preview.ts` — as of 2026-07-23, 7 rows (6 `engineering-toolkit` + 1 `marketing-toolkit`, all from `SeanningTatum/marketplace`); `example-skill` templates and the entire `seanningtatum-plugins` repo are excluded (see skills-inventory.md pruning decision)
 
 ### Testability
 - Unit tests: SkillRepository (list, filter by category/type)
@@ -32,7 +32,7 @@ Loader calls tRPC `skills.list` (full unfiltered set — same pattern as /projec
 | `app/routes/marketplace/index.tsx` | /marketplace UI (route registered in `app/routes.ts`, root + `:lng`) |
 | `app/components/portfolio-nav.tsx` | Shared nav — path-aware active link |
 | `app/locales/{en,zh}/marketplace.json` | i18n namespace (registered in `app/i18n/i18n.ts` + `i18n.d.ts`) |
-| `scripts/seed-preview.ts` | Seed 55 public items |
+| `scripts/seed-preview.ts` | Seed 6 public items (`SKILL_FIXTURES`) |
 
 ## Dependencies
 - `Database` service
@@ -49,6 +49,8 @@ Loader calls tRPC `skills.list` (full unfiltered set — same pattern as /projec
 
 | Date | Type | Description |
 |------|------|-------------|
+| 2026-07-23 | content | Added `mockup-screenshot` skill (new `marketing-toolkit` plugin, PR SeanningTatum/marketplace#10) — 7th `SKILL_FIXTURES` row, new `marketing` category (i18n en `Marketing` / zh `营销`). Local D1 re-seeded (7 rows, `marketing` count 1). Screenshot-verified `/marketplace`: sidebar shows Engineering 6 / Marketing 1, card renders with NEW badge + `SKILL / MARKETING-TOOLKIT` footer, 0 console errors. `typecheck` green. |
+| 2026-07-22 | prune | Catalog pruned to only what actually exists in `github.com/SeanningTatum/marketplace` (user-directed): `SKILL_FIXTURES` in `scripts/seed-preview.ts` cut from 55 rows to exactly 6 — all `engineering-toolkit` skills (`client-review`, `create-pr-with-review`, `new-app`, `pr-format`, `release`, `resolve-comments`); the entire `seanningtatum-plugins` catalog and both `example-skill` templates removed. Local D1 `skill` table cleared and re-seeded (verified 6 rows). `skills-inventory.md` rewritten with the decision record. `typecheck` + `test` (365/365) green. |
 | 2026-07-22 | feature | UI shipped — `/marketplace` route (+`:lng`), sidebar/search/sort/cards/banner per spec; enforcer minors fixed (mono labels 800, icon radius 25px); feature-verifier PASS `verifications/2026-07-22.md` (7/7 golden + empty-search path, 0 js/network errors). |
 | 2026-07-22 | feature | Data layer built — `skill` table, `SkillRepository`, `skills.list` tRPC procedure, 55-row seed verified. See `.brain/CHANGELOG.md` 2026-07-22 entry. |
 | 2026-07-21 | feature | Planned — inventory extracted from both marketplace repos |
