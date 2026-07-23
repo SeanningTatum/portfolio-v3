@@ -44,7 +44,7 @@ Marketplace skill content (feat-010) lives in **`content/skills/<slug>.md`**, bu
 - Content module: `app/lib/content/skills.ts` — `listSkills()`, validated once at module load against the `SkillContent` Effect Schema (`app/lib/schemas/skill.ts`); a malformed file fails loudly with `ContentParseError`.
 - Ordering matches the old repository: ascending `sortOrder`, then name.
 - Loader (`app/routes/marketplace/index.tsx`) calls `listSkills()` directly — no tRPC, no `context`. Category filter + search + sort are client-side.
-- Content: 7 skills (6 `engineering-toolkit` + 1 `marketing-toolkit`), ported verbatim from the old seed fixtures — see `.brain/features/skills-marketplace/skills-inventory.md`.
+- Content: 8 skills (6 `engineering-toolkit` + 2 `marketing-toolkit`) — see `.brain/features/skills-marketplace/skills-inventory.md`.
 
 ## SQLite / Drizzle conventions
 
