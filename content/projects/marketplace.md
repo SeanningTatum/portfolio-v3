@@ -16,12 +16,12 @@ stats: [{ "label": "Plugins", "value": "2" }, { "label": "Skills", "value": "8" 
 
 ## WHY
 
-Most AI coding help stops at a suggestion — it tells you what to do, then leaves the actual shipping to you. I wanted skills that close the loop: scaffold the app, open the PR, resolve the review, cut the release. The last mile, automated.
+Most AI coding help stops at advice — it tells you what to do and leaves the doing to you. I wanted to find out how much of my *actual* engineering loop I could hand off end to end: scaffold, open the PR, resolve the review, cut the release. Less "assistant," more "teammate who finishes the task and shows their work."
 
 ## HOW
 
-A personal, actively-developed Claude Code plugin marketplace with two plugins. `engineering-toolkit` is the ship-it loop end to end — scaffold a new app from a template, open a browser-verified and AI-reviewed PR, triage review comments by severity, and cut a branded release. `marketing-toolkit` is the polish layer — rewrite a README in marketing-grade language with real screenshots of every surface, and mock up output visuals when there's no live demo to capture.
+A personal, actively-developed Claude Code plugin marketplace with two plugins. `engineering-toolkit` is the ship-it loop — scaffold a new app from a template, open a browser-verified and AI-reviewed PR, triage review comments by severity, cut a branded release. `marketing-toolkit` is the polish layer — rewrite a README with real screenshots of every surface, and mock up output when there's no live demo to capture. One slash command per step of the real workflow.
 
 ## SOLUTION
 
-One slash command per step of the real engineering workflow. Every skill ships a README with its what / why / how and a visual of the output, so a reviewer — or a future me — sees exactly what it produces before running it. Installed with a single `/plugin marketplace add`.
+Skills I actually reach for on my own repos every week — this very PR was opened by one of them. The lesson: the leverage isn't the AI writing code, it's automating the unglamorous connective tissue *around* the code — the verify, the review, the formatting — the steps I'd otherwise cut when I'm tired and want to be done.

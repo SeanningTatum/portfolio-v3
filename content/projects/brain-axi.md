@@ -16,12 +16,12 @@ stats: [{ "label": "Dependencies", "value": "0" }, { "label": "Ships as", "value
 
 ## WHY
 
-Every new agent session starts from zero. It re-reads the codebase, re-derives what's in progress, re-asks "what did we decide last time" — and sometimes forgets a decision was ever made and re-litigates it. Context windows reset; institutional memory shouldn't.
+Every agent session starts from zero — re-reading the codebase, re-deriving what's in flight, sometimes re-litigating a decision it already made and forgot. I wanted to learn whether that institutional memory could live in the repo itself, and, more curiously, what an interface built for an *agent* to read — not a human — actually looks like when you design it honestly.
 
 ## HOW
 
-`brain` is a single-file, zero-dependency Node CLI that reads and writes a `.brain/` directory checked into the repo like any other code — features, progress checkpoints, rules, recipes, run notes, plan reviews. Output is [TOON](https://toonformat.dev/), not JSON or prose: pre-computed counts, truncated bodies with a `--full` escape hatch, and a `help:` block at the end of every command that teaches the agent what to run next. Agents shell out to it; no MCP server, no daemon, no API key.
+`brain` is a single-file, zero-dependency Node CLI over a `.brain/` directory checked into git like any other code — features, checkpoints, rules, recipes, run notes, plan reviews. The whole bet is the output format: [TOON](https://toonformat.dev/) instead of JSON or prose, with pre-computed counts, truncated bodies behind a `--full` flag, and a `help:` block on every command that teaches the agent its next move. The CLI's own output is how a fresh agent learns to use it — no MCP server, no daemon, no API key.
 
 ## SOLUTION
 
-Install the skill once and work normally — when you ask an agent to plan a feature, check what's in progress, or record where it left off, it discovers the right `brain` command and runs it. You get a queryable project brain as a side effect of the agent doing its job. A companion web surface renders plans for human review and streams execution dashboards live over SSE.
+Install the skill once and just work — the agent discovers the right command mid-task and writes to the brain as a side effect of doing its job, with a companion web surface for human plan review and live execution dashboards over SSE. What I took away: designing for an LLM reader inverts your instincts. Terseness, definitive empty states, and always naming the next action beat the human-friendly verbosity I'd have reached for by default.

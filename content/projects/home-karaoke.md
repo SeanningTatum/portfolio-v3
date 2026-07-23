@@ -16,12 +16,12 @@ stats: [{ "label": "Realtime", "value": "Durable Objects" }, { "label": "Guest d
 
 ## WHY
 
-House-party karaoke always devolves into one person hunched over a laptop being the human jukebox. Everyone else waits. I wanted the room to run itself — anyone can add a song, the queue is shared, and the TV is the only screen that matters.
+House-party karaoke always collapses onto one person hunched over a laptop, playing human jukebox while everyone else waits. The itch was social, but the thing I actually wanted to learn was technical: could I make a shared room feel genuinely *live* — a song added on someone's phone showing up on the TV instantly — and let Durable Objects carry the realtime state instead of hand-rolling it?
 
 ## HOW
 
-The host opens a room on the big screen; guests scan a QR to join and search YouTube from their phones. A Cloudflare Durable Object holds each room's live state — the queue, who's up, playback — and fans updates out to every connected device over WebSockets, so a song added on a phone appears on the TV instantly. React Router v7 on Workers front to back, Effect TS for the service layer.
+The host opens a room on the big screen; guests scan a QR to join and search YouTube from their phones. A Cloudflare Durable Object holds each room's live state — the queue, who's up, playback — and fans updates to every connected device over WebSockets, so the phone is the remote and the TV is the show. React Router v7 on Workers front to back, Effect TS for the service layer.
 
 ## SOLUTION
 
-A self-hostable karaoke room where the phone is the remote and the TV is the show — shared queue, live reactions, and a between-songs recap card, with no app to install and nothing to plug in but a browser.
+A self-hostable karaoke room with a shared queue, live emoji reactions, and a between-songs recap card — no app to install, nothing to plug in but a browser. The takeaway: Durable Objects made "one authoritative room, many live screens" almost boring to build — which is exactly the compliment you want to pay a piece of infrastructure.
