@@ -2,15 +2,16 @@
 
 ## tRPC routes
 
-Mounted at `/api/trpc/*`. The top-level router (`app/trpc/router.ts`) composes three sub-routers:
+Mounted at `/api/trpc/*`. The top-level router (`app/trpc/router.ts`) composes these sub-routers:
 
 | Router | File | Procedures |
 |--------|------|------------|
 | `user` | `app/trpc/router.ts` | `getUsers` (protected, safe projection), `deleteUser`, `createWorkflow` |
 | `admin` | `app/trpc/routes/admin.ts` | `getUsers`, `getUser`, `updateUser`, `banUser`, `unbanUser`, `deleteUser`, `bulkBanUsers`, `bulkDeleteUsers`, `bulkUpdateUserRoles` |
 | `analytics` | `app/trpc/routes/analytics.ts` | `getUserStats`, `getUserGrowth`, `getRoleDistribution`, `getVerificationDistribution`, `getRecentSignupsCount` |
-| `projects` | `app/trpc/routes/projects.ts` | `list` (public, optional `{ category? }` filter, `ProjectRepository.list` ordered `featured DESC, sortOrder ASC`), `getBySlug` (public, `{ slug }` → project row or `NOT_FOUND`), `getCaseStudy` (public, `{ slug }` → `{ project, prev, next }` for the `/projects/:slug` case-study page (feat-009); `prev`/`next` are `{ slug, title } \| null` from `ProjectRepository.getAdjacent`, same ordering as `list`, wraps around at either end) |
 | `skills` | `app/trpc/routes/skills.ts` | `list` (public, optional `{ category?, type? }` filter — `type` is the `SkillType` literal union, `SkillRepository.list` ordered `sortOrder ASC, name ASC`, for the `/marketplace` page, feat-010) |
+
+> **No `projects` router.** The `/projects` list (feat-008) and `/projects/:slug` case study (feat-009) no longer use tRPC — their loaders read bundled markdown directly via `app/lib/content/projects.ts` (`listProjects` / `getCaseStudy`). The `projects` router + `ProjectRepository` + `project` D1 table were removed on 2026-07-22.
 
 Read the route files directly for current input schemas — they're authoritative.
 

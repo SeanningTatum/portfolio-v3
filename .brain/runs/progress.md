@@ -21,6 +21,21 @@
 
 ---
 
+## 2026-07-22 — projects→markdown refactor + marketplace prune SHIPPED
+- branch: `main` (uncommitted batch continues — commits on user word)
+- in-progress feature: none
+- run notes: both 2026-07-22 run notes closed (projects-markdown-refactor, marketplace-prune-and-readme-prompt)
+- shipped: (A) /projects + /projects/:slug now read bundled markdown (`content/projects/*.md`, Vite raw glob + pure frontmatter parser + Effect Schema, `ContentParseError`); D1 project layer deleted (drop migration 0003, repo, tRPC router, fixtures); (B) marketplace catalog 55→6 (only SeanningTatum/marketplace engineering-toolkit skills), local D1 re-seeded + verified; (C) README-gen prompt at `.brain/features/skills-marketplace/readme-generation-prompt.md`. Verify: typecheck, 373 tests, build, harness 11/11; all 4 pages screenshot-eyeballed on main thread
+- outstanding: preview/remote D1 `skill` table still has old 55 rows (re-seed on next deploy); pre-existing 404-page nav center-jam cosmetic; commit batch on user word
+- next: user copies README prompt into marketplace repo; commit
+
+## 2026-07-22 — projects→markdown refactor + marketplace prune started (post-ship revisions)
+- branch: `main` (uncommitted batch continues)
+- in-progress feature: none (revisions to shipped feat-008/009/010 — statuses stay `shipped`, tracked via run notes)
+- run notes: `.brain/runs/2026-07-22-projects-markdown-refactor.md` + `.brain/runs/2026-07-22-marketplace-prune-and-readme-prompt.md`
+- scope: (A) /projects + /projects/:slug read bundled markdown (`content/projects/*.md`), D1 project layer deleted — opus agent; (B) marketplace catalog cut 55→6 (only SeanningTatum/marketplace repo skills) — sonnet agent; (C) README-gen prompt (WHAT/WHY/HOW + screenshots) for marketplace repo — sonnet agent
+- next: agents land edits; main thread runs verify-done + eyeballs pixels
+
 ## 2026-07-22 — feat-011 console-v2 SHIPPED
 - branch: `main` (uncommitted batch continues — commits on user word)
 - in-progress feature: none (11/11 shipped)

@@ -3,7 +3,9 @@
 _Last updated: 2026-07-22_
 
 ## Purpose
-Public `/projects` page listing Sean's skills, portfolios, and personal projects as a minimalist card grid, backed by a D1 `project` table. First content feature of portfolio-v3; establishes the project data model that the case-study page (feat-009) reads from.
+Public `/projects` page listing Sean's skills, portfolios, and personal projects as a minimalist card grid, sourced from **bundled markdown** (`content/projects/*.md`) parsed at build time. First content feature of portfolio-v3; establishes the project content model that the case-study page (feat-009) reads from.
+
+> **2026-07-22 refactor:** projects moved off D1 entirely. The `project` table, `ProjectRepository`, and the tRPC `projects` router were deleted; content now lives in markdown files bundled via `import.meta.glob`. See the "How It Works" and Changelog below.
 
 ## When It's Used
 - Visitor navigates to `/projects` (public, no auth)
@@ -11,35 +13,36 @@ Public `/projects` page listing Sean's skills, portfolios, and personal projects
 - Cards link into `/projects/:slug` (feat-009)
 
 ## How It Works
-React Router loader calls tRPC `projects.list` via `runProcedure` (publicProcedure) → `ProjectRepository.list()` (Effect.Service over Drizzle/D1) → renders 2-col white-card grid per design spec (`.brain/high-level-architecture/design-language.md`): macOS-chrome-framed thumbnail, title (700), one-line summary (500 gray), SF Mono meta `YEAR · STACK · ROLE`, filter pills by category, one full-width featured card per 4 items.
+React Router loader calls `listProjects()` from `app/lib/content/projects.ts` (no tRPC, no `context`) → returns all projects parsed from `content/projects/*.md`, ordered featured-first then `sortOrder` asc → renders 2-col white-card grid per design spec (`.brain/high-level-architecture/design-language.md`): macOS-chrome-framed thumbnail, title (700), one-line summary (500 gray), SF Mono meta `YEAR · STACK · ROLE`, filter pills by category (client-side via `?category=`), one full-width featured card per 4 items. UI is pixel-identical to the pre-refactor D1-backed version.
 
 ### Persistence details
-- Storage: D1 table `project` (Drizzle schema in `app/db/schema.ts` — repo convention, not `database/schema.ts` as originally scoped)
-- Shape: id, slug (unique+indexed), title, summary, category, year, stack (JSON array), role, thumbnailUrl, featured (bool), sortOrder, + case-study fields for feat-009 (why, how, solution, statsJson, client, heroImageUrl), createdAt/updatedAt
-- Writes: seed script only for now (no admin CRUD yet); extended `scripts/seed-preview.ts` with 4 representative fixtures
-- Migration via `bun run db:generate` + `db:migrate:local` (`drizzle/0001_funny_doctor_strange.sql`)
+- Storage: **bundled markdown** — one `content/projects/<slug>.md` per project. Frontmatter holds scalar/array fields (`slug`, `title`, `summary`, `category`, `year`, `stack`, `role`, `featured`, `sortOrder`, optional `client`/`thumbnailUrl`/`heroImageUrl`/`stats`); body holds `## WHY` / `## HOW` / `## SOLUTION` sections.
+- Bundling: `import.meta.glob("../../../content/projects/*.md", { query: "?raw", import: "default", eager: true })` inlines the raw strings into the Worker bundle at build — no `fs`, no DB, Workers-safe.
+- Parsing/validation: pure parser `app/lib/content/frontmatter.ts` (`parseFrontmatter` + `parseSections`); validated once at module load against the `ProjectContent` Effect Schema (`app/lib/schemas/project.ts`). A malformed file fails loudly with `ContentParseError` (`app/models/errors/content.ts`) instead of silently rendering.
+- Writes: edit the markdown files directly — no seed, no DB. (No D1 rows; `scripts/seed-preview.ts` no longer seeds projects.)
 
 ### Testability
-- Unit tests: `ProjectRepository` (list, category filter, getBySlug success/not-found, QueryError paths) against `makeTestDatabase` stub — 6 tests, green
-- `getProjectMeta` helper (`app/lib/project-meta.ts`) — 4 unit tests (year/stack[0]/role ordering, 3-token cap, empty-stack drop, year stringification)
-- Effect Schema inputs — 6 unit tests (`app/lib/schemas/__tests__/project.test.ts`): happy decode + rejection per field
-- feature-verifier browser walk → **PASS** — [`verifications/2026-07-21.md`](verifications/2026-07-21.md): 9/9 golden-path + 1/1 error-path assertions, 0 jsErrors, 0 networkErrors, screenshots in `screenshots/` (desktop 1440, mobile 390, hover, filter, empty-category)
+- `app/lib/content/__tests__/frontmatter.test.ts` — `parseFrontmatter` (scalars/numbers/booleans/JSON arrays/objects, first-colon split, malformed fence, missing colon) + `parseSections` (extract, missing section, empty section)
+- `app/lib/content/__tests__/projects.test.ts` — `parseProjectFile` (happy, missing section → undefined, malformed frontmatter → `ContentParseError`, missing required field → `ContentParseError`), `sortProjects` ordering, + the real bundled content (list/getBySlug/getAdjacent/getCaseStudy happy + unknown-slug paths)
+- `getProjectMeta` helper (`app/lib/project-meta.ts`) — 4 unit tests, unchanged
+- `ProjectContent` Effect Schema — 6 unit tests (`app/lib/schemas/__tests__/project.test.ts`): minimal/full decode + rejection per field
+- feature-verifier browser walk (pre-refactor) → **PASS** — [`verifications/2026-07-21.md`](verifications/2026-07-21.md). Re-verification of the markdown-backed version is a main-thread hand-off.
 
 ## Key Files
 
 | File | Role |
 |------|------|
-| `app/db/schema.ts` | `project` table (Drizzle) |
-| `app/repositories/project.ts` | ProjectRepository — Effect.Service (`list`, `getBySlug`) |
-| `app/repositories/__tests__/project.test.ts` | Unit tests |
-| `app/lib/schemas/project.ts` | Effect Schema — `ListProjectsInput`, `GetProjectBySlugInput` (re-exported from `app/lib/schemas/index.ts`) |
-| `app/lib/schemas/__tests__/project.test.ts` | Schema unit tests (6) |
-| `app/runtime.ts` | `ProjectRepository.Default` wired into `AppServices`/`reposLayer` |
-| `scripts/seed-preview.ts` | Seed fixtures (`PROJECT_FIXTURES`) |
-| `app/trpc/routes/projects.ts` | tRPC router — `list`/`getBySlug`, both `publicProcedure`, via `runProcedure` |
-| `app/trpc/router.ts` | `projectsRouter` registered as `projects` on the root `appRouter` |
+| `content/projects/*.md` | **Source of truth** — one markdown file per project (frontmatter + `## WHY`/`## HOW`/`## SOLUTION` body) |
+| `app/lib/content/frontmatter.ts` | Pure parser — `parseFrontmatter` (fenced `key: value` block, JSON-coerced values) + `parseSections` (`## heading` → text map) |
+| `app/lib/content/projects.ts` | Content module — glob load + validate; `listProjects`, `getProjectBySlug`, `getAdjacentProjects`, `getCaseStudy`, `parseProjectFile`, `sortProjects` |
+| `app/lib/content/__tests__/frontmatter.test.ts` | Parser unit tests |
+| `app/lib/content/__tests__/projects.test.ts` | Content module + `parseProjectFile` + `sortProjects` unit tests |
+| `app/lib/schemas/project.ts` | Effect Schema — `ProjectContent` (+ `ProjectStat`); frontmatter/body validation |
+| `app/lib/schemas/__tests__/project.test.ts` | `ProjectContent` schema unit tests (6) |
+| `app/models/errors/content.ts` | `ContentParseError` tagged error (mapped in `tagToTRPC`) |
 | `app/routes.ts` | `/projects` + `:lng/projects` registered (mirrors home/login/sign-up convention) |
-| `app/routes/projects/index.tsx` | `/projects` UI — loader calls `context.trpc.projects.list({})` (full unfiltered set), 2-col grid, filter pills via `?category=` search param (client + SSR shared), nav (wordmark/Projects/Marketplace/mailto CTA) |
+| `app/routes/projects/index.tsx` | `/projects` UI — loader calls `listProjects()` (full unfiltered set), 2-col grid, filter pills via `?category=` search param (client + SSR shared), nav (wordmark/Projects/Marketplace/mailto CTA) |
+| `drizzle/0003_square_abomination.sql` | Drop migration for the removed `project` table |
 | `app/components/macos-frame.tsx` | Reusable window-chrome card (dots + title bar) — shared with home hero (feat-007) + case study (feat-009) |
 | `app/components/project-card.tsx` | Card component — thumbnail-in-`MacosFrame` (silver-mist fallback block + slug label when `thumbnailUrl` null), SF Mono meta row, `featured` prop → full-width horizontal layout |
 | `app/lib/project-meta.ts` | `getProjectMeta` — pure helper building the `YEAR · STACK · ROLE` meta row (max 3 tokens, stack[0] only) |
@@ -47,7 +50,7 @@ React Router loader calls tRPC `projects.list` via `runProcedure` (publicProcedu
 | `app/app.css` | New fixed (non-dark-adaptive) portfolio tokens: `--canvas-mist`, `--carbon`, `--pure-white`, `--graphite`, `--pale-stone`, `--silver-mist` — see `rules/frontend.md` "Portfolio surface tokens" |
 
 ## Dependencies
-- `Database` service (D1/Drizzle)
+- Bundled markdown (`content/projects/*.md`) + `import.meta.glob` (Vite/Workers build) — no `Database` service
 - Design spec: `.brain/high-level-architecture/design-language.md`
 - shadcn primitives minimal — mostly custom monochrome styles
 
@@ -60,12 +63,13 @@ React Router loader calls tRPC `projects.list` via `runProcedure` (publicProcedu
 
 | Error | Where raised | tRPC code |
 |-------|--------------|-----------|
-| `NotFoundError` | repo getBySlug | NOT_FOUND |
+| `ContentParseError` | `parseProjectFile` (malformed frontmatter / schema validation failure) | INTERNAL_SERVER_ERROR (defensive — never reaches a client; parsing is at module load) |
 
 ## Changelog
 
 | Date | Type | Description |
 |------|------|-------------|
+| 2026-07-22 | refactor | **Moved projects off D1 to bundled markdown.** New `content/projects/*.md` (4 files, ported verbatim from the old `PROJECT_FIXTURES`), pure parser `app/lib/content/frontmatter.ts`, content module `app/lib/content/projects.ts` (glob + `ProjectContent` Effect Schema validation), `ContentParseError` tagged error. Rewired `app/routes/projects/index.tsx` loader to `listProjects()` (dropped tRPC). **Deleted**: `project` table (migration `drizzle/0003_square_abomination.sql`), `ProjectRepository` + tests, `app/trpc/routes/projects.ts`, `projects` from `appRouter`, `ProjectRepository` from `runtime.ts`, `PROJECT_FIXTURES` from `scripts/seed-preview.ts`. Component/helper `Project` type imports repointed to `ProjectContent`. typecheck + 373 tests + build all green. Status left `in-progress` pending main-thread browser verification. |
 | 2026-07-21 | feature | Post-verify hardening: schema unit tests (`app/lib/schemas/__tests__/project.test.ts`, effect-ts-enforcer finding), `project` re-exported from `app/lib/schemas/index.ts`, projects-count shows filtered length (feature-verifier finding). feature-verifier verdict PASS — `verifications/2026-07-21.md`. |
 | 2026-07-22 | feature | UI shipped via `add-route.md` recipe (recipe-runner): `app/routes/projects/index.tsx` (`/projects` + `:lng/projects`), `app/components/macos-frame.tsx` (reusable, shared), `app/components/project-card.tsx`, `app/lib/project-meta.ts` (+4 unit tests), `projects` i18n namespace (en+zh), new fixed portfolio design tokens in `app/app.css` per `design-language.md`. Category filter via `?category=` search param, client + SSR shared filtering. Self-verified via throwaway Playwright script (screenshots, computed-style hover check, mobile viewport). Typecheck/test(238 passing)/build all green. Status left `in-progress` pending `verify-done-runner` + `feature-verifier` passes — those are separate hand-offs, not run by recipe-runner. See "Known gaps / deviations" above. |
 | 2026-07-22 | feature | API layer shipped via `add-trpc-endpoint.md` recipe: `app/trpc/routes/projects.ts` (`list`, `getBySlug` — both `publicProcedure`), registered as `projects` on `appRouter` (`app/trpc/router.ts`). No new tagged error (`NotFoundError` already mapped). No new router-level test file — repo convention is repo-level tests only (`project.test.ts` already covers this). UI (`/projects` route, `project-card.tsx`) still pending — separate task. |

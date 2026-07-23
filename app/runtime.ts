@@ -8,7 +8,6 @@ import { LoggerLive, MinLogLevelLive } from "@/services/logger";
 import { UserRepository } from "@/repositories/user";
 import { AnalyticsRepository } from "@/repositories/analytics";
 import { BucketRepository } from "@/repositories/bucket";
-import { ProjectRepository } from "@/repositories/project";
 import { SkillRepository } from "@/repositories/skill";
 
 export type AppServices =
@@ -19,7 +18,6 @@ export type AppServices =
   | UserRepository
   | AnalyticsRepository
   | BucketRepository
-  | ProjectRepository
   | SkillRepository;
 
 // `baseURL` is the request's own origin — threaded through to Better Auth
@@ -37,7 +35,6 @@ export const makeAppRuntime = (env: Env, baseURL?: string) => {
     UserRepository.Default,
     AnalyticsRepository.Default,
     BucketRepository.Default,
-    ProjectRepository.Default,
     SkillRepository.Default
   );
   const layer = reposLayer

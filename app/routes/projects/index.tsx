@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { ProjectCard } from "@/components/project-card";
 import { PortfolioNav } from "@/components/portfolio-nav";
+import { listProjects } from "@/lib/content/projects";
 import { cn } from "@/lib/utils";
 import type { Route } from "./+types/index";
 
@@ -19,12 +20,11 @@ export function meta(_: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-  // Fetch the full unfiltered set — category filtering is applied client-side
-  // (via `?category=` search param) so the pill row can always show the full
-  // category list regardless of the active filter.
-  const projects = await context.trpc.projects.list({});
-  return { projects };
+export async function loader(_: Route.LoaderArgs) {
+  // Full unfiltered set from bundled markdown — category filtering is applied
+  // client-side (via `?category=` search param) so the pill row can always
+  // show the full category list regardless of the active filter.
+  return { projects: listProjects() };
 }
 
 export default function ProjectsIndex({ loaderData }: Route.ComponentProps) {
@@ -107,7 +107,7 @@ export default function ProjectsIndex({ loaderData }: Route.ComponentProps) {
           >
             {visible.map((project) => (
               <ProjectCard
-                key={project.id}
+                key={project.slug}
                 project={project}
                 featured={project.featured}
               />

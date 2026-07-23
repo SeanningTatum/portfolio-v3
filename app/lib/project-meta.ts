@@ -1,4 +1,4 @@
-import type { Project } from "@/db/schema";
+import type { ProjectContent } from "@/lib/schemas/project";
 
 /**
  * Builds the SF Mono meta row shown on a project card: `YEAR · STACK · ROLE`
@@ -8,7 +8,7 @@ import type { Project } from "@/db/schema";
  * rendered as empty `· ·` separators.
  */
 export function getProjectMeta(
-  project: Pick<Project, "year" | "stack" | "role">
+  project: Pick<ProjectContent, "year" | "stack" | "role">
 ): string[] {
   return [String(project.year), project.stack[0], project.role]
     .filter((token): token is string => Boolean(token))

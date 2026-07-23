@@ -12,16 +12,11 @@
 | `session` | Active sessions (Better Auth) | `userId → user.id` (cascade), `impersonatedBy` (admin user id, no FK) |
 | `account` | Credential / OAuth accounts | `userId → user.id` (cascade) |
 | `verification` | Email verification tokens | Linked logically by `identifier` (email) |
-| `project` | Portfolio showcase content (feat-008/009) | No FKs — standalone content table |
 | `skill` | Claude skills marketplace content (feat-010) | No FKs — standalone content table |
 
-The first four tables are owned by Better Auth's drizzle adapter. `project` is the first app-specific business table — content for the public `/projects` list (feat-008) and `/projects/:slug` case-study page (feat-009). `skill` is the data source for the public `/marketplace` page (feat-010).
+The first four tables are owned by Better Auth's drizzle adapter. `skill` is the first app-specific business table and the data source for the public `/marketplace` page (feat-010).
 
-### `project`
-
-`id`, `slug` (unique + indexed), `title`, `summary`, `category` (free text, no enum constraint — validated at the Effect Schema boundary instead so new categories don't need a migration), `year`, `stack` (JSON `text` array), `role`, `thumbnailUrl` (nullable), `featured` (bool, default false), `sortOrder` (int, default 0), plus nullable case-study fields for feat-009: `client`, `heroImageUrl`, `why`, `how`, `solution`, `statsJson` (JSON array of `{ label, value }`). `createdAt`/`updatedAt` per convention.
-
-Repository: `app/repositories/project.ts` (`ProjectRepository.list(filter?)` ordered `featured DESC, sortOrder ASC`; `ProjectRepository.getBySlug(slug)` → `NotFoundError` on miss). Inputs: `app/lib/schemas/project.ts`.
+> **Projects are not a D1 table.** The `/projects` list (feat-008) and `/projects/:slug` case study (feat-009) read from **bundled markdown** (`content/projects/*.md`), not the database — see the "Project content (markdown, not D1)" section below. The old `project` table was dropped in migration `drizzle/0003_square_abomination.sql` (2026-07-22).
 
 ### `skill`
 
@@ -38,9 +33,17 @@ user ◄─────┬───── session   (userId, impersonatedBy)
            │
            └─ ─ ─ verification (by identifier=email, no FK)
 
-project (standalone — no FKs)
 skill (standalone — no FKs)
 ```
+
+## Project content (markdown, not D1)
+
+Portfolio project content (feat-008/009) lives in **`content/projects/<slug>.md`**, bundled into the Worker at build time via `import.meta.glob("...", { query: "?raw", eager: true })` — no `fs`, no DB round trip. One file per project: frontmatter holds the scalar/array fields (`slug`, `title`, `summary`, `category`, `year`, `stack`, `role`, `featured`, `sortOrder`, optional `client`/`thumbnailUrl`/`heroImageUrl`/`stats`); the body holds `## WHY` / `## HOW` / `## SOLUTION` sections.
+
+- Parser: `app/lib/content/frontmatter.ts` (pure `parseFrontmatter` + `parseSections`, no deps).
+- Content module: `app/lib/content/projects.ts` — `listProjects()`, `getProjectBySlug(slug)`, `getAdjacentProjects(slug)`, `getCaseStudy(slug)`. Files are validated once at module load against the `ProjectContent` Effect Schema (`app/lib/schemas/project.ts`); a malformed file fails loudly with `ContentParseError` (`app/models/errors/content.ts`).
+- Ordering matches the old repository: featured first, then ascending `sortOrder`.
+- Loaders (`app/routes/projects/index.tsx`, `$slug.tsx`) call the content module directly — no tRPC, no `context`.
 
 ## SQLite / Drizzle conventions
 

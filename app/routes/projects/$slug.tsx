@@ -1,11 +1,11 @@
 import { isRouteErrorResponse, Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { TRPCError } from "@trpc/server";
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
 import { PortfolioNav } from "@/components/portfolio-nav";
 import { MacosFrame } from "@/components/macos-frame";
 import { ProjectCover } from "@/components/project-cover";
+import { getCaseStudy } from "@/lib/content/projects";
 import { cn, splitParagraphs } from "@/lib/utils";
 import type { Route } from "./+types/$slug";
 
@@ -34,22 +34,17 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params, context }: Route.LoaderArgs) {
-  try {
-    return await context.trpc.projects.getCaseStudy({ slug: params.slug });
-  } catch (err) {
-    // `context.trpc` is a server-side tRPC caller (workers/app.ts,
-    // `createCallerFactory`), not an HTTP client — a failed procedure throws
-    // the `TRPCError` produced by `runProcedure`/`tagToTRPC` directly, never
-    // a `TRPCClientError`. This is loader-level client code (not an Effect
-    // program), so a plain try/catch here — scoped to translating one known
-    // error code into React Router's throw-a-Response 404 convention — is
-    // the right boundary, not a rule violation.
-    if (err instanceof TRPCError && err.code === "NOT_FOUND") {
-      throw new Response("Not Found", { status: 404 });
-    }
-    throw err;
+export async function loader({ params }: Route.LoaderArgs) {
+  // Content is bundled markdown (see `@/lib/content/projects`), not a DB/tRPC
+  // read — `getCaseStudy` returns the project + prev/next, or `undefined` for
+  // an unknown slug. Translate the miss into React Router's throw-a-Response
+  // 404 convention so the route-level `ErrorBoundary` below renders the
+  // on-brand not-found page. Anything else is left to bubble to root.
+  const caseStudy = getCaseStudy(params.slug);
+  if (!caseStudy) {
+    throw new Response("Not Found", { status: 404 });
   }
+  return caseStudy;
 }
 
 export default function ProjectCaseStudy({ loaderData }: Route.ComponentProps) {

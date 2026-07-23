@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
-import type { Project } from "@/db/schema";
+import type { ProjectContent } from "@/lib/schemas/project";
 
 interface ProjectCoverProps {
-  project: Pick<Project, "slug" | "title" | "year" | "category">;
+  project: Pick<ProjectContent, "slug" | "title" | "year" | "category">;
   /** Taller composition for the case-study hero. */
   hero?: boolean;
   className?: string;

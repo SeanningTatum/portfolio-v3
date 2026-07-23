@@ -1,41 +1,67 @@
 # Skills Inventory — seed data for /marketplace
 
-> Extracted 2026-07-21 from local repos. Use as D1 seed source for the Skills Marketplace feature.
-> Only items authored by Sean (SeanningTatum). Excluded: caveman (Julius Brussee), casper-studios/* (company).
+> Extracted 2026-07-21 from local repos; **pruned 2026-07-22** (user-directed
+> decision, see below). Use as D1 seed source for the Skills Marketplace
+> feature.
 
-## Marketplaces
+## Pruning decision (2026-07-22)
 
-1. **sean-skills** — repo `github.com/SeanningTatum/marketplace` (local: `~/Desktop/personal-projects/marketplace`) — "Sean's personal Claude Code plugins for SaaS engineering and automations."
-2. **seanningtatum-plugins** — repo `github.com/SeanningTatum/claude-plugins` (local: `~/Desktop/personal-projects/claude-plugins`)
+Only `github.com/SeanningTatum/marketplace` (marketplace name **"sean-skills"**)
+counts as a real, publicly-installable marketplace for now. Verified via
+`gh api repos/SeanningTatum/marketplace/contents/...` against the live repo —
+it has exactly 2 plugins:
 
-Manifests: `.claude-plugin/marketplace.json` in each repo + per-plugin `plugins/<name>/.claude-plugin/plugin.json`.
+- **engineering-toolkit** (category `engineering`): 6 real skills —
+  `client-review`, `create-pr-with-review`, `new-app`, `pr-format`, `release`,
+  `resolve-comments` — plus `example-skill`, which is the starter template and
+  is excluded from public display.
+- **automation-toolkit**: contains only `example-skill` (the template) — 0
+  real skills, so the plugin contributes nothing to the catalog.
 
-**Totals:** 2 marketplaces, 5 plugins, 57 items (32 skills incl. 2 templates, 16 commands, 7 agents, 1 rule, 1 hook). cf-saas-stack also bundles 3 MCP server configs (tavily, playwright, posthog).
+The previously-seeded second marketplace, `seanningtatum-plugins`
+(`github.com/SeanningTatum/claude-plugins` — 49 items across `cf-saas-stack`,
+`dev-workflows`, and `project-management`), is **excluded entirely**. It isn't
+wired up as an installable Claude Code marketplace the way `sean-skills` is,
+so it doesn't belong in a catalog that's meant to show real, installable
+tools. If/when that repo is published as a proper marketplace, re-add it as
+its own pass (extend `SKILL_FIXTURES` in `scripts/seed-preview.ts`, don't
+silently fold it back in).
+
+**Net result: exactly 6 skills, all in `engineering-toolkit`, all type
+`skill`, all category `engineering`.**
+
+## Marketplace
+
+**sean-skills** — repo `github.com/SeanningTatum/marketplace` — "Sean's
+personal Claude Code plugins for SaaS engineering and automations."
+
+Manifest: `.claude-plugin/marketplace.json` + per-plugin
+`plugins/<name>/.claude-plugin/plugin.json`. Per-skill descriptions below are
+taken verbatim from each skill's `SKILL.md` frontmatter (`gh api
+repos/SeanningTatum/marketplace/contents/plugins/engineering-toolkit/skills/<skill>/SKILL.md`).
 
 ## Items
 
 | Plugin | Item | Type | Description |
 |---|---|---|---|
-| engineering-toolkit | client-review | skill | Turn any HTML doc into an offline commentable artifact for client review; read comments back as markdown |
-| engineering-toolkit | create-pr-with-review | skill | Open a PR pre-reviewed by Greptile CLI; Playwright browser proof + P1/P2/P3 auto-fix ruleset |
-| engineering-toolkit | new-app | skill | Scaffold a new app from the cf-saas-starter-react-router template |
-| engineering-toolkit | pr-format | skill | Format PR descriptions: WHY/WHAT/HOW/SOLUTION/VERIFICATION/CAVEATS/NEXT STEPS |
-| engineering-toolkit | release | skill | Squash-merge, pick next semver tag, publish GitHub release with marketing-grade notes |
-| engineering-toolkit | resolve-comments | skill | Auto-resolve GitHub PR review comments by P1/P2/P3 severity; re-trigger Greptile re-review |
-| cf-saas-stack | 20 skills | skills | Stack conventions: Better Auth, CF Workflows, D1/Drizzle schema, Resend emails, env vars, error classes, PostHog flags, i18n, ShadCN modals, models, Playwright E2E, repository pattern, routes, Stripe, structured output, test creds, testing workflow (auth, cloudflare-workflows, context-clients, context-docs, database, docs, emails, environment-variables, errors, feature-flags, i18n, modals, models, playwright-tests, repository-pattern, routes, stripe, structured-output, test-credentials, testing-workflow) |
-| cf-saas-stack | 11 commands | commands | architecture-tracker, create-feature-flag, db-migration, docs-structure, dry-audit, implement-feature, organization-best-practices, posthog-setup, pr-checker, setup-widget, sync-changes |
-| cf-saas-stack | 5 agents | agents | architecture-tracker, context-keeper, data-analytics, logger, tester |
-| dev-workflows | 4 skills | skills | frontend-task, prompts, pull-request, tailwind |
-| dev-workflows | 5 commands | commands | create-pull-request, frontend-design, plan-with-subagents, principal-review, ux-product-thinking |
-| dev-workflows | 2 agents | agents | figma-design-validator, figma-to-tailwind-converter |
-| project-management | changelog | rule + hook | Changelog enforcement — PreToolUse hook on `git commit` runs pre-commit-changelog.sh |
-| automation-toolkit | example-skill | skill (template) | Starter template placeholder — exclude from public display |
-| engineering-toolkit | example-skill | skill (template) | Starter template placeholder — exclude from public display |
+| engineering-toolkit | client-review | skill | Turn any HTML doc into a self-contained, offline commentable artifact for a client to review, then read their comments back as markdown for agents. |
+| engineering-toolkit | create-pr-with-review | skill | Open a pull request that has already been through an AI review — runs the Greptile CLI, resolves findings by a P1/P2/P3 ruleset, then formats and creates the PR. |
+| engineering-toolkit | new-app | skill | Scaffold a new application from the cf-saas-starter-react-router template — new GitHub repo, cloned locally, AGENTS.md seeded, then hand off to the setup wizard. |
+| engineering-toolkit | pr-format | skill | Format PR descriptions for maximum readability using a fixed structure — WHY, WHAT, HOW, SOLUTION, VERIFICATION, CAVEATS, NEXT STEPS. |
+| engineering-toolkit | release | skill | Ship a merged-ready PR as a versioned release: squash-merge, pick the next semver tag, and publish a GitHub release with marketing-grade notes. |
+| engineering-toolkit | resolve-comments | skill | Read a GitHub PR's review comments and resolve them automatically where safe, triaging each by a P1/P2/P3 severity ruleset; re-triggers Greptile re-review. |
 
-## Category suggestion for /marketplace sidebar
+## Excluded (do not seed)
 
-- Engineering (engineering-toolkit skills)
-- Stack Conventions (cf-saas-stack skills)
-- Commands (all commands)
-- Agents (all agents)
-- Workflow (dev-workflows, project-management)
+| Plugin/Repo | Item | Reason |
+|---|---|---|
+| engineering-toolkit | example-skill | Starter template placeholder |
+| automation-toolkit | example-skill | Starter template placeholder — the plugin's only item |
+| seanningtatum-plugins (github.com/SeanningTatum/claude-plugins) | all 49 items (cf-saas-stack skills/commands/agents, dev-workflows skills/commands/agents, project-management rule+hook) | Excluded 2026-07-22 — not a real installable marketplace for this catalog's purposes; see decision above |
+
+## Category for /marketplace sidebar
+
+- `engineering` — the only category currently populated (engineering-toolkit
+  skills). Other category keys (`stack-conventions`, `commands`, `agents`,
+  `workflow`) remain defined in i18n (`app/locales/{en,zh}/marketplace.json`)
+  for when/if a second marketplace is re-added, but nothing seeds them today.
