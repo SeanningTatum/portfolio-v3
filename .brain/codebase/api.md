@@ -9,9 +9,8 @@ Mounted at `/api/trpc/*`. The top-level router (`app/trpc/router.ts`) composes t
 | `user` | `app/trpc/router.ts` | `getUsers` (protected, safe projection), `deleteUser`, `createWorkflow` |
 | `admin` | `app/trpc/routes/admin.ts` | `getUsers`, `getUser`, `updateUser`, `banUser`, `unbanUser`, `deleteUser`, `bulkBanUsers`, `bulkDeleteUsers`, `bulkUpdateUserRoles` |
 | `analytics` | `app/trpc/routes/analytics.ts` | `getUserStats`, `getUserGrowth`, `getRoleDistribution`, `getVerificationDistribution`, `getRecentSignupsCount` |
-| `skills` | `app/trpc/routes/skills.ts` | `list` (public, optional `{ category?, type? }` filter — `type` is the `SkillType` literal union, `SkillRepository.list` ordered `sortOrder ASC, name ASC`, for the `/marketplace` page, feat-010) |
 
-> **No `projects` router.** The `/projects` list (feat-008) and `/projects/:slug` case study (feat-009) no longer use tRPC — their loaders read bundled markdown directly via `app/lib/content/projects.ts` (`listProjects` / `getCaseStudy`). The `projects` router + `ProjectRepository` + `project` D1 table were removed on 2026-07-22.
+> **No `projects` or `skills` router.** All three content-page loaders read bundled markdown directly, not tRPC: `/projects` + `/projects/:slug` (feat-008/009) via `app/lib/content/projects.ts` (`listProjects` / `getCaseStudy`); `/marketplace` (feat-010) via `app/lib/content/skills.ts` (`listSkills`). The `projects` router + `ProjectRepository` + `project` table were removed 2026-07-22; the `skills` router + `SkillRepository` + `skill` table 2026-07-23.
 
 Read the route files directly for current input schemas — they're authoritative.
 

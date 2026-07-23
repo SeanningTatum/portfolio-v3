@@ -29,6 +29,13 @@
       "when": 1784755376667,
       "tag": "0003_square_abomination",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1784831373020,
+      "tag": "0004_public_korath",
+      "breakpoints": true
     }
   ]
 }

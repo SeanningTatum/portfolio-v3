@@ -1,8 +1,21 @@
 import { describe, it, expect } from "vitest";
 import { Schema } from "effect";
-import { SkillType, ListSkillsInput } from "../skill";
+import { SkillType, SkillContent } from "../skill";
 
 const decode = <A, I>(s: Schema.Schema<A, I>) => Schema.decodeUnknownEither(s);
+
+const validSkill = {
+  slug: "client-review",
+  name: "Client Review",
+  description: "Turn any HTML doc into an offline commentable artifact.",
+  type: "skill",
+  category: "engineering",
+  plugin: "engineering-toolkit",
+  repoUrl:
+    "https://github.com/SeanningTatum/marketplace/tree/main/plugins/engineering-toolkit/skills/client-review",
+  isNew: true,
+  sortOrder: 0,
+};
 
 describe("SkillType", () => {
   it("decodes each valid literal", () => {
@@ -16,32 +29,31 @@ describe("SkillType", () => {
   });
 });
 
-describe("ListSkillsInput", () => {
-  it("decodes an empty payload", () => {
-    expect(decode(ListSkillsInput)({})._tag).toBe("Right");
-  });
-
-  it("decodes a category filter", () => {
-    expect(decode(ListSkillsInput)({ category: "engineering" })._tag).toBe(
-      "Right"
-    );
-  });
-
-  it("decodes a type filter", () => {
-    expect(decode(ListSkillsInput)({ type: "command" })._tag).toBe("Right");
-  });
-
-  it("decodes a combined category + type filter", () => {
-    expect(
-      decode(ListSkillsInput)({ category: "commands", type: "command" })._tag
-    ).toBe("Right");
-  });
-
-  it("rejects a non-string category", () => {
-    expect(decode(ListSkillsInput)({ category: 42 })._tag).toBe("Left");
+describe("SkillContent", () => {
+  it("decodes a valid skill", () => {
+    expect(decode(SkillContent)(validSkill)._tag).toBe("Right");
   });
 
   it("rejects an invalid type", () => {
-    expect(decode(ListSkillsInput)({ type: "plugin" })._tag).toBe("Left");
+    expect(decode(SkillContent)({ ...validSkill, type: "plugin" })._tag).toBe(
+      "Left"
+    );
+  });
+
+  it("rejects a missing required field", () => {
+    const { repoUrl, ...noUrl } = validSkill;
+    expect(decode(SkillContent)(noUrl)._tag).toBe("Left");
+  });
+
+  it("rejects a non-boolean isNew", () => {
+    expect(decode(SkillContent)({ ...validSkill, isNew: "yes" })._tag).toBe(
+      "Left"
+    );
+  });
+
+  it("rejects a non-number sortOrder", () => {
+    expect(
+      decode(SkillContent)({ ...validSkill, sortOrder: "0" })._tag
+    ).toBe("Left");
   });
 });
