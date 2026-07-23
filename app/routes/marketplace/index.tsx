@@ -54,12 +54,9 @@ export default function MarketplaceIndex({ loaderData }: Route.ComponentProps) {
     }
     // Sidebar follows seed sortOrder (engineering → stack → workflow →
     // commands → agents), not alphabetical — the seed already encodes the
-    // reading order.
-    const seen: string[] = [];
-    for (const skill of skills) {
-      if (!seen.includes(skill.category)) seen.push(skill.category);
-    }
-    return seen.map((category) => ({
+    // reading order. A Set dedupes while preserving first-seen order.
+    const seen = new Set(skills.map((skill) => skill.category));
+    return [...seen].map((category) => ({
       category,
       count: counts.get(category) ?? 0,
     }));
