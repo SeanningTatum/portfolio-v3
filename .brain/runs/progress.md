@@ -26,8 +26,9 @@
 - in-progress feature: none
 - run notes: both 2026-07-22 run notes closed (projects-markdown-refactor, marketplace-prune-and-readme-prompt)
 - shipped: (A) /projects + /projects/:slug now read bundled markdown (`content/projects/*.md`, Vite raw glob + pure frontmatter parser + Effect Schema, `ContentParseError`); D1 project layer deleted (drop migration 0003, repo, tRPC router, fixtures); (B) marketplace catalog 55→6 (only SeanningTatum/marketplace engineering-toolkit skills), local D1 re-seeded + verified; (C) README-gen prompt at `.brain/features/skills-marketplace/readme-generation-prompt.md`. Verify: typecheck, 373 tests, build, harness 11/11; all 4 pages screenshot-eyeballed on main thread
-- outstanding: preview/remote D1 `skill` table still has old 55 rows (re-seed on next deploy); pre-existing 404-page nav center-jam cosmetic; commit batch on user word
-- next: user copies README prompt into marketplace repo; commit
+- outstanding: preview/remote D1 `skill` table still has old 55 rows (re-seed on next deploy); pre-existing 404-page nav center-jam cosmetic
+- next: user copies README prompt into marketplace repo
+- 2026-07-23 update: batch committed on branch `refactor/projects-markdown-marketplace-prune` (c5f304d + 28df457); origin remote wired (stale unrelated ee112d7 snapshot force-replaced with local main, user-approved); pre-PR Greptile review found 1 real bug (stats frontmatter vs statsJson schema field — stat rows silently empty) → fixed + regression test, 374 tests; PR #1 opened https://github.com/SeanningTatum/portfolio-v3/pull/1 (28df457 also carries user's concurrent mockup-screenshot/marketing-toolkit catalog addition)
 
 ## 2026-07-22 — projects→markdown refactor + marketplace prune started (post-ship revisions)
 - branch: `main` (uncommitted batch continues)

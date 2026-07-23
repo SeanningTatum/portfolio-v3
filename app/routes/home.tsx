@@ -119,9 +119,6 @@ export default function Home() {
 
       {/* Sound control — top-right, under the nav CTA */}
       <SoundToggle className="absolute top-24 right-6 z-10 sm:right-10" />
-      <StageLabel className="top-1/2 right-6 hidden -translate-y-1/2 text-right sm:block sm:right-10">
-        PORTFOLIO — 2026
-      </StageLabel>
 
       {/* Spacer — the object lives here */}
       <div className="flex-1" aria-hidden />
@@ -135,7 +132,6 @@ export default function Home() {
           </span>
           {t("hero.availability")}
         </p>
-        <StageLabel className="static">v3.0</StageLabel>
       </div>
 
       {/* The portals — navigation as the page's typographic event.
@@ -229,26 +225,5 @@ function Portal({
         ↗
       </span>
     </Link>
-  );
-}
-
-/** Tiny corner-anchored SF Mono utility label on the dark stage. */
-function StageLabel({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <span
-      className={cn(
-        "pointer-events-none absolute z-10 font-mono text-[10px] font-extrabold tracking-[0.2em] text-white/40 uppercase",
-        className
-      )}
-      aria-hidden
-    >
-      {children}
-    </span>
   );
 }
