@@ -84,39 +84,10 @@ export const verification = sqliteTable("verification", {
     .notNull(),
 });
 
-// NOTE: projects are no longer a D1 table. Portfolio project content
-// (feat-008/009) now lives in bundled markdown under `content/projects/*.md`,
-// parsed + validated at build time by `app/lib/content/projects.ts`. The old
-// `project` table was dropped in migration `drizzle/0003_*`.
-
-export const skill = sqliteTable("skill", {
-  id: text("id").primaryKey(),
-  slug: text("slug").notNull().unique(),
-  name: text("name").notNull(),
-  description: text("description").notNull(),
-  // Free-text type (e.g. "skill" | "command" | "agent" | "rule" | "hook") —
-  // no enum constraint at the DB layer, validated at the Effect Schema
-  // boundary instead so new types don't require a migration.
-  type: text("type").notNull(),
-  // Free-text category (e.g. "engineering" | "stack-conventions" |
-  // "workflow" | "commands" | "agents") — no enum constraint at the DB
-  // layer, validated at the Effect Schema boundary instead so new
-  // categories don't require a migration.
-  category: text("category").notNull(),
-  plugin: text("plugin").notNull(),
-  marketplaceRepo: text("marketplace_repo").notNull(),
-  repoUrl: text("repo_url").notNull(),
-  isNew: integer("is_new", { mode: "boolean" }).default(false).notNull(),
-  sortOrder: integer("sort_order").default(0).notNull(),
-
-  createdAt: integer("created_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp_ms" })
-    .default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
-});
-
-export type Skill = typeof skill.$inferSelect;
-export type NewSkill = typeof skill.$inferInsert;
+// NOTE: neither projects nor marketplace skills are D1 tables anymore. Both
+// content sets now live in bundled markdown parsed + validated at build time:
+// portfolio project content (feat-008/009) under `content/projects/*.md` via
+// `app/lib/content/projects.ts`, and marketplace skills (feat-010) under
+// `content/skills/*.md` via `app/lib/content/skills.ts`. The old `project`
+// table was dropped in migration `drizzle/0003_*`, the `skill` table in
+// `drizzle/0004_*`.

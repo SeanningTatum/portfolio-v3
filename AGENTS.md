@@ -4,7 +4,7 @@
 
 ## Overview
 
-**portfolio-v3** — Sean's personal portfolio. Minimalist 3D-styled site (desktop.fm-inspired: monochrome neutrals, chrome 3D hero via React Three Fiber, neon accent): home page with 3D scene, `/projects` showcase, `/projects/:id` case studies (WHY / HOW / SOLUTION), and `/marketplace` displaying agentically-created Claude skills. Content lives in D1.
+**portfolio-v3** — Sean's personal portfolio. Minimalist 3D-styled site (desktop.fm-inspired: monochrome neutrals, chrome 3D hero via React Three Fiber, neon accent): home page with 3D scene, `/projects` showcase, `/projects/:id` case studies (WHY / HOW / SOLUTION), and `/marketplace` displaying agentically-created Claude skills. Page content (projects + marketplace skills) lives in bundled markdown under `content/`; D1 holds only auth data (users/sessions).
 
 Built on the Cloudflare SaaS stack: **Cloudflare Workers + React Router v7 + tRPC + D1/Drizzle + Better Auth + Effect TS + ShadCN/Tailwind**.
 

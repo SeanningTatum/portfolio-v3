@@ -62,144 +62,12 @@ const FIXTURES: Fixture[] = [
   },
 ];
 
-// NOTE: portfolio projects are no longer seeded into D1. Project content
-// (feat-008/009) now lives in bundled markdown under `content/projects/*.md`,
-// parsed at build time by `app/lib/content/projects.ts` — the `project` table
-// was dropped. Nothing to seed here.
-
-interface SkillFixture {
-  id: string;
-  slug: string;
-  name: string;
-  description: string;
-  type: "skill" | "command" | "agent" | "rule" | "hook";
-  category: string;
-  plugin: string;
-  marketplaceRepo: string;
-  repoUrl: string;
-  isNew: boolean;
-  sortOrder: number;
-}
-
-// Seed source: `.brain/features/skills-marketplace/skills-inventory.md`.
-//
-// PRUNED 2026-07-22 (user-directed): only `github.com/SeanningTatum/marketplace`
-// (marketplace name "sean-skills") counts as a real, publicly-installable
-// marketplace for now. That repo has exactly 2 plugins — engineering-toolkit
-// (6 real skills below) and automation-toolkit (nothing but its
-// `example-skill` template, so 0 real skills). The previously-seeded
-// `seanningtatum-plugins` (github.com/SeanningTatum/claude-plugins) catalog
-// and both `example-skill` template placeholders are excluded entirely — see
-// `.brain/features/skills-marketplace/skills-inventory.md` for the full
-// decision record.
-const MARKETPLACE_SKILLS_BASE =
-  "https://github.com/SeanningTatum/marketplace/tree/main/plugins";
-const MARKETPLACE_SKILLS_URL = `${MARKETPLACE_SKILLS_BASE}/engineering-toolkit/skills`;
-const MARKETING_SKILLS_URL = `${MARKETPLACE_SKILLS_BASE}/marketing-toolkit/skills`;
-
-const SKILL_FIXTURES: SkillFixture[] = [
-  // --- engineering (engineering-toolkit skills — the only real skills in
-  // SeanningTatum/marketplace) ---
-  {
-    id: "seed-skill-client-review",
-    slug: "client-review",
-    name: "Client Review",
-    description:
-      "Turn any HTML doc into a self-contained, offline commentable artifact for a client to review, then read their comments back as markdown for agents.",
-    type: "skill",
-    category: "engineering",
-    plugin: "engineering-toolkit",
-    marketplaceRepo: "SeanningTatum/marketplace",
-    repoUrl: `${MARKETPLACE_SKILLS_URL}/client-review`,
-    isNew: true,
-    sortOrder: 0,
-  },
-  {
-    id: "seed-skill-create-pr-with-review",
-    slug: "create-pr-with-review",
-    name: "Create PR With Review",
-    description:
-      "Open a pull request that has already been through an AI review — runs the Greptile CLI, resolves findings by a P1/P2/P3 ruleset, then formats and creates the PR.",
-    type: "skill",
-    category: "engineering",
-    plugin: "engineering-toolkit",
-    marketplaceRepo: "SeanningTatum/marketplace",
-    repoUrl: `${MARKETPLACE_SKILLS_URL}/create-pr-with-review`,
-    isNew: true,
-    sortOrder: 1,
-  },
-  {
-    id: "seed-skill-new-app",
-    slug: "new-app",
-    name: "New App",
-    description:
-      "Scaffold a new application from the cf-saas-starter-react-router template — new GitHub repo, cloned locally, AGENTS.md seeded, then hand off to the setup wizard.",
-    type: "skill",
-    category: "engineering",
-    plugin: "engineering-toolkit",
-    marketplaceRepo: "SeanningTatum/marketplace",
-    repoUrl: `${MARKETPLACE_SKILLS_URL}/new-app`,
-    isNew: true,
-    sortOrder: 2,
-  },
-  {
-    id: "seed-skill-pr-format",
-    slug: "pr-format",
-    name: "PR Format",
-    description:
-      "Format PR descriptions for maximum readability using a fixed structure — WHY, WHAT, HOW, SOLUTION, VERIFICATION, CAVEATS, NEXT STEPS.",
-    type: "skill",
-    category: "engineering",
-    plugin: "engineering-toolkit",
-    marketplaceRepo: "SeanningTatum/marketplace",
-    repoUrl: `${MARKETPLACE_SKILLS_URL}/pr-format`,
-    isNew: false,
-    sortOrder: 3,
-  },
-  {
-    id: "seed-skill-release",
-    slug: "release",
-    name: "Release",
-    description:
-      "Ship a merged-ready PR as a versioned release: squash-merge, pick the next semver tag, and publish a GitHub release with marketing-grade notes.",
-    type: "skill",
-    category: "engineering",
-    plugin: "engineering-toolkit",
-    marketplaceRepo: "SeanningTatum/marketplace",
-    repoUrl: `${MARKETPLACE_SKILLS_URL}/release`,
-    isNew: true,
-    sortOrder: 4,
-  },
-  {
-    id: "seed-skill-resolve-comments",
-    slug: "resolve-comments",
-    name: "Resolve Comments",
-    description:
-      "Read a GitHub PR's review comments and resolve them automatically where safe, triaging each by a P1/P2/P3 severity ruleset; re-triggers Greptile re-review.",
-    type: "skill",
-    category: "engineering",
-    plugin: "engineering-toolkit",
-    marketplaceRepo: "SeanningTatum/marketplace",
-    repoUrl: `${MARKETPLACE_SKILLS_URL}/resolve-comments`,
-    isNew: true,
-    sortOrder: 5,
-  },
-  // --- marketing (marketing-toolkit skills) ---
-  {
-    id: "seed-skill-mockup-screenshot",
-    slug: "mockup-screenshot",
-    name: "Mockup Screenshot",
-    description:
-      "Illustrate a README's output with a labeled, honest SVG mockup when there's no live demo to capture — renders macOS-terminal or browser-styled mockups from a JSON line-spec.",
-    type: "skill",
-    category: "marketing",
-    plugin: "marketing-toolkit",
-    marketplaceRepo: "SeanningTatum/marketplace",
-    repoUrl: `${MARKETING_SKILLS_URL}/mockup-screenshot`,
-    isNew: true,
-    sortOrder: 6,
-  },
-];
+// NOTE: neither portfolio projects nor marketplace skills are seeded into D1.
+// Both content sets now live in bundled markdown parsed at build time —
+// projects (feat-008/009) under `content/projects/*.md` via
+// `app/lib/content/projects.ts`, and marketplace skills (feat-010) under
+// `content/skills/*.md` via `app/lib/content/skills.ts`. The `project` and
+// `skill` tables were dropped. Nothing to seed here.
 
 function fail(message: string): never {
   console.error(`\x1b[31m✗ ${message}\x1b[0m`);
@@ -288,29 +156,6 @@ async function buildSql(): Promise<string> {
     );
   }
 
-  for (const s of SKILL_FIXTURES) {
-    lines.push(
-      `INSERT OR IGNORE INTO skill (` +
-        "id, slug, name, description, type, category, plugin, marketplace_repo, " +
-        "repo_url, is_new, sort_order" +
-        `) VALUES (` +
-        [
-          sqlString(s.id),
-          sqlString(s.slug),
-          sqlString(s.name),
-          sqlString(s.description),
-          sqlString(s.type),
-          sqlString(s.category),
-          sqlString(s.plugin),
-          sqlString(s.marketplaceRepo),
-          sqlString(s.repoUrl),
-          s.isNew ? 1 : 0,
-          s.sortOrder,
-        ].join(", ") +
-        `);`,
-    );
-  }
-
   return lines.join("\n") + "\n";
 }
 
@@ -358,19 +203,11 @@ function describeMarkdown(): string {
   lines.push("");
   lines.push(
     "Seeded data: the accounts above (Better Auth `user` + credential " +
-      "`account` rows), plus " +
-      `${SKILL_FIXTURES.length} rows in the \`skill\` table (Claude skills ` +
-      "marketplace content). Fixtures are idempotent " +
-      "(`INSERT OR IGNORE`, fixed `seed-*` ids), so data you create on the " +
-      "preview survives new pushes to this PR. (Portfolio project content " +
-      "lives in bundled markdown under `content/projects/*.md`, not D1.)",
-  );
-  lines.push("");
-  lines.push("#### Seeded skills");
-  lines.push("");
-  lines.push(
-    `${SKILL_FIXTURES.length} items across skill/command/agent/rule/hook types — ` +
-      "see `.brain/features/skills-marketplace/skills-inventory.md` for the full breakdown.",
+      "`account` rows). Fixtures are idempotent (`INSERT OR IGNORE`, fixed " +
+      "`seed-*` ids), so data you create on the preview survives new pushes " +
+      "to this PR. (Portfolio project content lives in bundled markdown under " +
+      "`content/projects/*.md`, and marketplace skills under " +
+      "`content/skills/*.md` — neither is in D1.)",
   );
   return lines.join("\n") + "\n";
 }
@@ -404,8 +241,7 @@ async function main(): Promise<void> {
     execSync(command, { stdio: "inherit", env: process.env });
 
     console.log(
-      `\x1b[32m✓ Seeded ${target.label} D1 with ${FIXTURES.length} fixture users + ` +
-        `${SKILL_FIXTURES.length} skills\x1b[0m`,
+      `\x1b[32m✓ Seeded ${target.label} D1 with ${FIXTURES.length} fixture users\x1b[0m`,
     );
     printCredentialsTable();
   } catch (error: any) {

@@ -12,8 +12,9 @@ import {
 } from "@tabler/icons-react";
 
 import { PortfolioNav } from "@/components/portfolio-nav";
+import { listSkills } from "@/lib/content/skills";
 import { cn } from "@/lib/utils";
-import type { Skill } from "@/db/schema";
+import type { SkillContent } from "@/lib/schemas/skill";
 import type { Route } from "./+types/index";
 
 export const handle = { i18n: ["marketplace", "projects"] };
@@ -28,12 +29,11 @@ export function meta(_: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ context }: Route.LoaderArgs) {
-  // Full unfiltered set — category + search narrowing happen client-side so
-  // the sidebar always shows every category with its true count (same call
-  // as /projects makes for its filter pills).
-  const skills = await context.trpc.skills.list({});
-  return { skills };
+export async function loader(_: Route.LoaderArgs) {
+  // Full unfiltered set from bundled markdown — category + search narrowing
+  // happen client-side so the sidebar always shows every category with its
+  // true count (same call as /projects makes for its filter pills).
+  return { skills: listSkills() };
 }
 
 type SortMode = "az" | "newFirst";
@@ -54,12 +54,9 @@ export default function MarketplaceIndex({ loaderData }: Route.ComponentProps) {
     }
     // Sidebar follows seed sortOrder (engineering → stack → workflow →
     // commands → agents), not alphabetical — the seed already encodes the
-    // reading order.
-    const seen: string[] = [];
-    for (const skill of skills) {
-      if (!seen.includes(skill.category)) seen.push(skill.category);
-    }
-    return seen.map((category) => ({
+    // reading order. A Set dedupes while preserving first-seen order.
+    const seen = new Set(skills.map((skill) => skill.category));
+    return [...seen].map((category) => ({
       category,
       count: counts.get(category) ?? 0,
     }));
@@ -194,7 +191,7 @@ export default function MarketplaceIndex({ loaderData }: Route.ComponentProps) {
                 data-testid="marketplace-grid"
               >
                 {visible.map((skill) => (
-                  <SkillCard key={skill.id} skill={skill} />
+                  <SkillCard key={skill.slug} skill={skill} />
                 ))}
               </div>
             )}
@@ -280,7 +277,7 @@ const TYPE_ICONS = {
  * SF Mono outline — never colored. Uniform heights via line-clamp + mt-auto
  * footer. Links out to the plugin's GitHub folder.
  */
-function SkillCard({ skill }: { skill: Skill }) {
+function SkillCard({ skill }: { skill: SkillContent }) {
   const { t } = useTranslation("marketplace");
   const Icon =
     TYPE_ICONS[skill.type as keyof typeof TYPE_ICONS] ?? IconSparkles;
