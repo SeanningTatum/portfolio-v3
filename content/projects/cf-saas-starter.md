@@ -6,10 +6,12 @@ category: tooling
 year: 2025
 stack: ["react-router", "cloudflare-workers", "effect-ts", "better-auth"]
 role: Author & maintainer
+thumbnailUrl: /projects/cf-saas-starter/thumb.png
 featured: false
-sortOrder: 1
+sortOrder: 3
 client: Open source
-stats: [{ "label": "GitHub stars", "value": "120+" }]
+heroImageUrl: /projects/cf-saas-starter/hero.gif
+stats: [{ "label": "Stack pieces", "value": "7" }, { "label": "Clone to signup", "value": "<10 min" }]
 ---
 
 ## WHY

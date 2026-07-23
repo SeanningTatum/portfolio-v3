@@ -7,5 +7,5 @@ year: 2025
 stack: ["next.js", "postgres", "websockets"]
 role: Full-stack engineer
 featured: false
-sortOrder: 2
+sortOrder: 5
 ---

@@ -6,9 +6,11 @@ category: saas
 year: 2026
 stack: ["react-router", "cloudflare-workers", "effect-ts", "d1", "trpc"]
 role: Solo builder
+thumbnailUrl: /projects/portfolio-v3/thumb.png
 featured: true
 sortOrder: 0
 client: Personal
+heroImageUrl: /projects/portfolio-v3/hero.png
 stats: [{ "label": "Unit tests", "value": "234+" }, { "label": "Cold start", "value": "<50ms" }]
 ---
 
