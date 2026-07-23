@@ -30,7 +30,7 @@ describe("ProjectContent", () => {
         why: "why text",
         how: "how text",
         solution: "solution text",
-        statsJson: [{ label: "Unit tests", value: "234+" }],
+        stats: [{ label: "Unit tests", value: "234+" }],
       })._tag
     ).toBe("Right");
   });
@@ -52,7 +52,7 @@ describe("ProjectContent", () => {
     expect(
       decode(ProjectContent)({
         ...base,
-        statsJson: [{ label: "Unit tests" }],
+        stats: [{ label: "Unit tests" }],
       })._tag
     ).toBe("Left");
   });

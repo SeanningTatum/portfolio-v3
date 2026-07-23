@@ -38,6 +38,6 @@ export const ProjectContent = Schema.Struct({
   why: Schema.optional(Schema.NullOr(Schema.String)),
   how: Schema.optional(Schema.NullOr(Schema.String)),
   solution: Schema.optional(Schema.NullOr(Schema.String)),
-  statsJson: Schema.optional(Schema.NullOr(Schema.Array(ProjectStat))),
+  stats: Schema.optional(Schema.NullOr(Schema.Array(ProjectStat))),
 });
 export type ProjectContent = typeof ProjectContent.Type;

@@ -9,7 +9,7 @@
 Only `github.com/SeanningTatum/marketplace` (marketplace name **"sean-skills"**)
 counts as a real, publicly-installable marketplace for now. Verified via
 `gh api repos/SeanningTatum/marketplace/contents/...` against the live repo —
-it has exactly 2 plugins:
+it has these plugins:
 
 - **engineering-toolkit** (category `engineering`): 6 real skills —
   `client-review`, `create-pr-with-review`, `new-app`, `pr-format`, `release`,
@@ -17,6 +17,8 @@ it has exactly 2 plugins:
   is excluded from public display.
 - **automation-toolkit**: contains only `example-skill` (the template) — 0
   real skills, so the plugin contributes nothing to the catalog.
+- **marketing-toolkit** (category `marketing`): 1 real skill —
+  `mockup-screenshot` — added 2026-07-23 (PR SeanningTatum/marketplace#10).
 
 The previously-seeded second marketplace, `seanningtatum-plugins`
 (`github.com/SeanningTatum/claude-plugins` — 49 items across `cf-saas-stack`,
@@ -27,8 +29,8 @@ tools. If/when that repo is published as a proper marketplace, re-add it as
 its own pass (extend `SKILL_FIXTURES` in `scripts/seed-preview.ts`, don't
 silently fold it back in).
 
-**Net result: exactly 6 skills, all in `engineering-toolkit`, all type
-`skill`, all category `engineering`.**
+**Net result: 7 skills — 6 in `engineering-toolkit` (category `engineering`)
++ 1 in `marketing-toolkit` (category `marketing`), all type `skill`.**
 
 ## Marketplace
 
@@ -50,6 +52,7 @@ repos/SeanningTatum/marketplace/contents/plugins/engineering-toolkit/skills/<ski
 | engineering-toolkit | pr-format | skill | Format PR descriptions for maximum readability using a fixed structure — WHY, WHAT, HOW, SOLUTION, VERIFICATION, CAVEATS, NEXT STEPS. |
 | engineering-toolkit | release | skill | Ship a merged-ready PR as a versioned release: squash-merge, pick the next semver tag, and publish a GitHub release with marketing-grade notes. |
 | engineering-toolkit | resolve-comments | skill | Read a GitHub PR's review comments and resolve them automatically where safe, triaging each by a P1/P2/P3 severity ruleset; re-triggers Greptile re-review. |
+| marketing-toolkit | mockup-screenshot | skill | Illustrate a README's output with a labeled, honest SVG mockup when there's no live demo to capture — renders macOS-terminal or browser-styled mockups from a JSON line-spec. |
 
 ## Excluded (do not seed)
 
@@ -61,7 +64,8 @@ repos/SeanningTatum/marketplace/contents/plugins/engineering-toolkit/skills/<ski
 
 ## Category for /marketplace sidebar
 
-- `engineering` — the only category currently populated (engineering-toolkit
-  skills). Other category keys (`stack-conventions`, `commands`, `agents`,
-  `workflow`) remain defined in i18n (`app/locales/{en,zh}/marketplace.json`)
+- `engineering` (engineering-toolkit, 6) + `marketing` (marketing-toolkit, 1)
+  — the currently-populated categories. Other category keys
+  (`stack-conventions`, `commands`, `agents`, `workflow`) remain defined in
+  i18n (`app/locales/{en,zh}/marketplace.json`)
   for when/if a second marketplace is re-added, but nothing seeds them today.

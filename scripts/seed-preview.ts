@@ -92,8 +92,10 @@ interface SkillFixture {
 // and both `example-skill` template placeholders are excluded entirely — see
 // `.brain/features/skills-marketplace/skills-inventory.md` for the full
 // decision record.
-const MARKETPLACE_SKILLS_URL =
-  "https://github.com/SeanningTatum/marketplace/tree/main/plugins/engineering-toolkit/skills";
+const MARKETPLACE_SKILLS_BASE =
+  "https://github.com/SeanningTatum/marketplace/tree/main/plugins";
+const MARKETPLACE_SKILLS_URL = `${MARKETPLACE_SKILLS_BASE}/engineering-toolkit/skills`;
+const MARKETING_SKILLS_URL = `${MARKETPLACE_SKILLS_BASE}/marketing-toolkit/skills`;
 
 const SKILL_FIXTURES: SkillFixture[] = [
   // --- engineering (engineering-toolkit skills — the only real skills in
@@ -181,6 +183,21 @@ const SKILL_FIXTURES: SkillFixture[] = [
     repoUrl: `${MARKETPLACE_SKILLS_URL}/resolve-comments`,
     isNew: true,
     sortOrder: 5,
+  },
+  // --- marketing (marketing-toolkit skills) ---
+  {
+    id: "seed-skill-mockup-screenshot",
+    slug: "mockup-screenshot",
+    name: "Mockup Screenshot",
+    description:
+      "Illustrate a README's output with a labeled, honest SVG mockup when there's no live demo to capture — renders macOS-terminal or browser-styled mockups from a JSON line-spec.",
+    type: "skill",
+    category: "marketing",
+    plugin: "marketing-toolkit",
+    marketplaceRepo: "SeanningTatum/marketplace",
+    repoUrl: `${MARKETING_SKILLS_URL}/mockup-screenshot`,
+    isNew: true,
+    sortOrder: 6,
   },
 ];
 

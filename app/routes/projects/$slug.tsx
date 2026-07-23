@@ -66,7 +66,7 @@ export default function ProjectCaseStudy({ loaderData }: Route.ComponentProps) {
       Boolean(section.body)
   );
 
-  const stats = project.statsJson ?? [];
+  const stats = project.stats ?? [];
 
   return (
     <div className="min-h-svh bg-canvas-mist">

@@ -146,4 +146,10 @@ describe("content module (bundled markdown)", () => {
     expect(caseStudy).toHaveProperty("prev");
     expect(caseStudy).toHaveProperty("next");
   });
+
+  it("decodes the stats frontmatter of a project that declares it", () => {
+    const project = getProjectBySlug("portfolio-v3");
+    expect(project?.stats?.length).toBeGreaterThan(0);
+    expect(project?.stats?.[0]).toEqual({ label: "Unit tests", value: "234+" });
+  });
 });
