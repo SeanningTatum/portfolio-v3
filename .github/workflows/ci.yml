@@ -58,6 +58,10 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Build
+        # Vite's server-bundle sourcemap pass exceeds Node's default old-space
+        # on the hosted runner (SIGABRT: FatalProcessOutOfMemory); raise it.
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
         run: bun run build
 
   # Thin, stable smoke specs (auth + critical paths) — the automated regression net.
@@ -130,11 +134,14 @@ jobs:
           fi
           ADDED=$(echo "$DIFF" | grep -E '^\+' | grep -vE '^\+\+\+' || true)
           VIOLATIONS=""
-          # Allowed throws: inside Effect.tryPromise, comments, and
+          # Allowed throws: inside Effect.tryPromise, comments,
           # `throw new TRPCError` — tRPC's middleware/errorFormatter contract
           # requires throwing at the boundary (see app/trpc/index.ts and
-          # app/lib/effect-trpc.ts, the designated Effect→tRPC edge).
-          if echo "$ADDED" | grep -E '\bthrow new\b' | grep -vE 'tryPromise|//|throw new TRPCError'; then
+          # app/lib/effect-trpc.ts, the designated Effect→tRPC edge) — and
+          # `throw new Response` — React Router's loader contract for routing
+          # a request to the route ErrorBoundary with a status code (the
+          # loader not-found pattern codified in .brain/rules/routes.md).
+          if echo "$ADDED" | grep -E '\bthrow new\b' | grep -vE 'tryPromise|//|throw new TRPCError|throw new Response'; then
             VIOLATIONS="$VIOLATIONS\n- Bare \`throw\` (use Effect.fail)"
           fi
           if echo "$ADDED" | grep -E 'process\.env'; then
